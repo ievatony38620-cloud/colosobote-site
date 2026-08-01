@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tableau de bord — colosobotmodo</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0d14;
+    --bg-alt: #10141f;
+    --panel: #141924;
+    --line: #232b3d;
+    --cyan: #4cf3ff;
+    --purple: #b14cff;
+    --pink: #ff4cd8;
+    --text: #e8eef5;
+    --text-dim: #8993a6;
+    --text-dimmer: #5b6479;
+    --success: #3ddc84;
+    --error: #ff5f7e;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Inter', sans-serif;
+    line-height: 1.6;
+  }
+
+  h1, h2, .display { font-family: 'Chakra Petch', sans-serif; }
+  code, .mono { font-family: 'JetBrains Mono', monospace; }
+  a { text-decoration: none; color: inherit; }
+
+  .glow-text {
+    background: linear-gradient(90deg, var(--cyan), var(--purple));
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+
+  nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 20px 6vw;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .brand {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-family: 'Chakra Petch', sans-serif;
+    font-weight: 700;
+    font-size: 1.15rem;
+  }
+
+  .brand-mark {
+    width: 34px;
+    height: 34px;
+    border-radius: 9px;
+    background: conic-gradient(from 180deg, var(--cyan), var(--purple), var(--pink), var(--cyan));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .brand-mark::after {
+    content: "";
+    width: 22px;
+    height: 22px;
+    border-radius: 6px;
+    background: var(--bg);
+  }
+
+  .back-link { color: var(--text-dim); font-size: 0.9rem; }
+  .back-link:hover { color: var(--text); }
+
+  main { max-width: 760px; margin: 0 auto; padding: 70px 6vw 100px; }
+
+  /* ---------- Password gate ---------- */
+  #gate {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 18px;
+    padding: 80px 20px;
+  }
+
+  #gate h1 { font-size: 1.8rem; }
+  #gate p { color: var(--text-dim); max-width: 40ch; }
+
+  .gate-form {
+    display: flex;
+    gap: 10px;
+    margin-top: 12px;
+    width: 100%;
+    max-width: 380px;
+  }
+
+  input[type="password"], input[type="text"], textarea {
+    width: 100%;
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 12px 14px;
+    color: var(--text);
+    font-family: 'Inter', sans-serif;
+    font-size: 0.95rem;
+  }
+
+  textarea { font-family: 'JetBrains Mono', monospace; font-size: 0.88rem; resize: vertical; min-height: 76px; }
+
+  input:focus, textarea:focus { outline: none; border-color: var(--cyan); }
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 22px;
+    border-radius: 10px;
+    font-weight: 600;
+    font-size: 0.92rem;
+    cursor: pointer;
+    border: none;
+    white-space: nowrap;
+  }
+
+  .btn-primary { background: linear-gradient(90deg, var(--cyan), var(--purple)); color: #060810; }
+  .btn-primary:hover { filter: brightness(1.08); }
+  .btn-ghost { background: transparent; border: 1px solid var(--line); color: var(--text); }
+  .btn-ghost:hover { border-color: var(--cyan); }
+
+  #error-msg { color: var(--error); font-size: 0.85rem; min-height: 1.2em; }
+
+  /* ---------- Dashboard ---------- */
+  #dashboard { display: none; }
+
+  .dash-head { margin-bottom: 40px; }
+  .dash-head h1 { font-size: 1.9rem; margin-bottom: 10px; }
+  .dash-head p { color: var(--text-dim); }
+
+  .field-group {
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    padding: 24px;
+    margin-bottom: 20px;
+  }
+
+  .field-group h2 {
+    font-size: 1.02rem;
+    margin-bottom: 6px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .field-group .hint {
+    color: var(--text-dimmer);
+    font-size: 0.82rem;
+    margin-bottom: 14px;
+  }
+
+  .field-group .hint code {
+    color: var(--cyan);
+    background: rgba(76,243,255,0.08);
+    padding: 1px 6px;
+    border-radius: 5px;
+  }
+
+  .field { margin-bottom: 16px; }
+  .field:last-child { margin-bottom: 0; }
+  .field label {
+    display: block;
+    font-size: 0.82rem;
+    color: var(--text-dim);
+    margin-bottom: 6px;
+  }
+
+  .save-bar {
+    position: sticky;
+    bottom: 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: rgba(10,13,20,0.9);
+    backdrop-filter: blur(10px);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    padding: 16px 20px;
+    margin-top: 30px;
+  }
+
+  #status-msg { font-size: 0.85rem; color: var(--text-dim); }
+  #status-msg.success { color: var(--success); }
+  #status-msg.error { color: var(--error); }
+
+  .icon { width: 20px; height: 20px; display: inline-block; }
+
+  @media (max-width: 600px) {
+    .gate-form { flex-direction: column; }
+    .save-bar { flex-direction: column; gap: 12px; align-items: stretch; text-align: center; }
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="brand">
+    <div class="brand-mark"></div>
+    colosobotmodo
+  </div>
+  <a href="index.html" class="back-link">← Retour au site</a>
+</nav>
+
+<main>
+
+  <div id="gate">
+    <h1>Tableau de bord <span class="glow-text">privé</span></h1>
+    <p>Entre le mot de passe de ton bot pour modifier les messages en direct.</p>
+    <div class="gate-form">
+      <input type="password" id="password-input" placeholder="Mot de passe">
+      <button class="btn btn-primary" id="unlock-btn">Déverrouiller</button>
+    </div>
+    <div id="error-msg"></div>
+  </div>
+
+  <div id="dashboard">
+    <div class="dash-head">
+      <h1>Messages du <span class="glow-text">bot</span></h1>
+      <p>Modifie les textes ci-dessous, puis clique sur "Enregistrer" en bas de page. Les changements s'appliquent immédiatement sur ton serveur.</p>
+    </div>
+
+    <div class="field-group">
+      <h2>👋 Bienvenue</h2>
+      <div class="field">
+        <label for="welcome_message">Message à l'arrivée d'un membre</label>
+        <div class="hint">Utilise <code>{member}</code>, <code>{server}</code>, <code>{count}</code></div>
+        <textarea id="welcome_message"></textarea>
+      </div>
+      <div class="field">
+        <label for="leave_message">Message au départ d'un membre</label>
+        <div class="hint">Utilise <code>{member}</code></div>
+        <textarea id="leave_message"></textarea>
+      </div>
+    </div>
+
+    <div class="field-group">
+      <h2>📈 Niveaux</h2>
+      <div class="field">
+        <label for="levelup_message">Message de passage de niveau</label>
+        <div class="hint">Utilise <code>{member}</code>, <code>{level}</code></div>
+        <textarea id="levelup_message"></textarea>
+      </div>
+    </div>
+
+    <div class="field-group">
+      <h2>🎫 Tickets</h2>
+      <div class="field">
+        <label for="ticket_panel_title">Titre du panneau de tickets</label>
+        <input type="text" id="ticket_panel_title">
+      </div>
+      <div class="field">
+        <label for="ticket_panel_description">Description du panneau de tickets</label>
+        <textarea id="ticket_panel_description"></textarea>
+      </div>
+      <div class="field">
+        <label for="ticket_welcome_message">Message dans un ticket ouvert</label>
+        <div class="hint">Utilise <code>{member}</code></div>
+        <textarea id="ticket_welcome_message"></textarea>
+      </div>
+    </div>
+
+    <div class="field-group">
+      <h2>📊 Sondages</h2>
+      <div class="field">
+        <label for="poll_footer">Pied de page des sondages</label>
+        <div class="hint">Utilise <code>{author}</code></div>
+        <input type="text" id="poll_footer">
+      </div>
+    </div>
+
+    <div class="save-bar">
+      <span id="status-msg"></span>
+      <div style="display:flex; gap:10px;">
+        <button class="btn btn-ghost" id="reload-btn">Recharger</button>
+        <button class="btn btn-primary" id="save-btn">Enregistrer</button>
+      </div>
+    </div>
+  </div>
+
+</main>
+
+<script>
+  // Remplace par l'URL publique de ton API (Railway → Settings → Networking → Generate Domain)
+  const API_BASE_URL = "#";
+
+  const fields = [
+    "welcome_message", "leave_message", "levelup_message",
+    "ticket_panel_title", "ticket_panel_description", "ticket_welcome_message",
+    "poll_footer",
+  ];
+
+  let apiKey = "";
+
+  const gate = document.getElementById("gate");
+  const dashboard = document.getElementById("dashboard");
+  const errorMsg = document.getElementById("error-msg");
+  const statusMsg = document.getElementById("status-msg");
+
+  async function fetchConfig() {
+    const res = await fetch(`${API_BASE_URL}/api/config`, {
+      headers: { "X-API-Key": apiKey },
+    });
+    if (!res.ok) throw new Error("unauthorized");
+    return res.json();
+  }
+
+  async function saveConfig(data) {
+    const res = await fetch(`${API_BASE_URL}/api/config`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json", "X-API-Key": apiKey },
+      body: JSON.stringify(data),
+    });
+    if (!res.ok) throw new Error("save failed");
+    return res.json();
+  }
+
+  function fillForm(config) {
+    fields.forEach((key) => {
+      const el = document.getElementById(key);
+      if (el) el.value = config[key] || "";
+    });
+  }
+
+  function readForm() {
+    const data = {};
+    fields.forEach((key) => {
+      const el = document.getElementById(key);
+      if (el) data[key] = el.value;
+    });
+    return data;
+  }
+
+  document.getElementById("unlock-btn").addEventListener("click", async () => {
+    apiKey = document.getElementById("password-input").value.trim();
+    if (!apiKey) return;
+    errorMsg.textContent = "";
+    try {
+      const config = await fetchConfig();
+      fillForm(config);
+      gate.style.display = "none";
+      dashboard.style.display = "block";
+    } catch (e) {
+      errorMsg.textContent = "Mot de passe incorrect, ou le bot est hors ligne.";
+    }
+  });
+
+  document.getElementById("password-input").addEventListener("keydown", (e) => {
+    if (e.key === "Enter") document.getElementById("unlock-btn").click();
+  });
+
+  document.getElementById("reload-btn").addEventListener("click", async () => {
+    statusMsg.textContent = "Rechargement...";
+    statusMsg.className = "";
+    try {
+      const config = await fetchConfig();
+      fillForm(config);
+      statusMsg.textContent = "Messages rechargés.";
+    } catch (e) {
+      statusMsg.textContent = "Impossible de recharger.";
+      statusMsg.className = "error";
+    }
+  });
+
+  document.getElementById("save-btn").addEventListener("click", async () => {
+    statusMsg.textContent = "Enregistrement...";
+    statusMsg.className = "";
+    try {
+      await saveConfig(readForm());
+      statusMsg.textContent = "✅ Messages enregistrés et actifs sur le serveur.";
+      statusMsg.className = "success";
+    } catch (e) {
+      statusMsg.textContent = "❌ Échec de l'enregistrement.";
+      statusMsg.className = "error";
+    }
+  });
+</script>
+
+</body>
+</html>
