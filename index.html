@@ -435,6 +435,7 @@
     <a href="#fonctions">Fonctions</a>
     <a href="#commandes">Commandes</a>
     <a href="#rejoindre">Ajouter le bot</a>
+    <a href="dashboard.html">Tableau de bord</a>
   </div>
   <a href="#" class="btn btn-primary" id="invite-nav">Inviter le bot</a>
 </nav>
@@ -571,7 +572,7 @@
 
 <script>
   // Remplace INVITE_URL par le lien généré dans le Discord Developer Portal (OAuth2 > URL Generator)
-  const INVITE_URL = "https://discord.com/oauth2/authorize?client_id=1533001404539736154&permissions=1101662333014&integration_type=0&scope=bot+applications.commands";
+  const INVITE_URL = "#";
   document.querySelectorAll('#invite-nav, #invite-hero, #invite-cta').forEach(el => {
     el.setAttribute('href', INVITE_URL);
     el.setAttribute('target', '_blank');
