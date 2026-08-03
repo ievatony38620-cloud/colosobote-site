@@ -351,7 +351,7 @@
   const logoutLink = document.getElementById("logout-link");
   const panelTitle = document.getElementById("panel-title");
 
-  loginBtn.href = `${API_BASE_URL}/api/auth/login`;
+  loginBtn.href = `${API_BASE_URL}/api/auth/login?return_to=dashboard.html`;
 
   function authHeaders(extra = {}) {
     return { Authorization: `Bearer ${sessionToken}`, ...extra };
