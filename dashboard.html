@@ -5,21 +5,23 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Tableau de bord — colosobotmodo</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Russo+One&family=Rajdhani:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
   :root {
-    --bg: #0a0d14;
-    --bg-alt: #10141f;
-    --panel: #141924;
-    --line: #232b3d;
-    --cyan: #4cf3ff;
-    --purple: #b14cff;
-    --pink: #ff4cd8;
-    --text: #e8eef5;
-    --text-dim: #8993a6;
-    --text-dimmer: #5b6479;
-    --success: #3ddc84;
-    --error: #ff5f7e;
+    --bg: #07060d;
+    --bg-alt: #0d0a18;
+    --panel: #14101f;
+    --panel-2: #1b1630;
+    --line: #2a2242;
+    --blue: #3fa9ff;
+    --violet: #a855f7;
+    --magenta: #ff3ec8;
+    --text: #f2f0fa;
+    --text-dim: #9d97b8;
+    --text-dimmer: #675f88;
+    --success: #33e0a0;
+    --error: #ff5a7a;
+    --sidebar-w: 236px;
   }
 
   * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -27,123 +29,139 @@
   body {
     background: var(--bg);
     color: var(--text);
-    font-family: 'Inter', sans-serif;
+    font-family: 'Rajdhani', sans-serif;
+    font-weight: 500;
+    font-size: 1.02rem;
     line-height: 1.6;
+    min-height: 100vh;
   }
 
-  h1, h2, .display { font-family: 'Chakra Petch', sans-serif; }
+  h1, h2, .display { font-family: 'Russo One', sans-serif; font-weight: 400; }
   code, .mono { font-family: 'JetBrains Mono', monospace; }
   a { text-decoration: none; color: inherit; }
 
   .glow-text {
-    background: linear-gradient(90deg, var(--cyan), var(--purple));
+    background: linear-gradient(90deg, var(--blue), var(--violet) 60%, var(--magenta));
     -webkit-background-clip: text;
     background-clip: text;
     color: transparent;
   }
 
-  nav {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 20px 6vw;
-    border-bottom: 1px solid var(--line);
-  }
-
-  .brand {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    font-family: 'Chakra Petch', sans-serif;
-    font-weight: 700;
-    font-size: 1.15rem;
-  }
+  .hex { clip-path: polygon(25% 5%, 75% 5%, 100% 50%, 75% 95%, 25% 95%, 0% 50%); }
 
   .brand-mark {
-    width: 34px;
-    height: 34px;
-    border-radius: 9px;
-    background: conic-gradient(from 180deg, var(--cyan), var(--purple), var(--pink), var(--cyan));
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    width: 34px; height: 34px;
+    background: conic-gradient(from 180deg, var(--blue), var(--violet), var(--magenta), var(--blue));
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
   }
-
   .brand-mark::after {
     content: "";
-    width: 22px;
-    height: 22px;
-    border-radius: 6px;
-    background: var(--bg);
+    width: 24px; height: 24px;
+    background: var(--bg-alt);
+    clip-path: polygon(25% 5%, 75% 5%, 100% 50%, 75% 95%, 25% 95%, 0% 50%);
   }
 
-  .back-link { color: var(--text-dim); font-size: 0.9rem; }
-  .back-link:hover { color: var(--text); }
-
-  main { max-width: 760px; margin: 0 auto; padding: 70px 6vw 100px; }
-
-  /* ---------- Password gate ---------- */
-  #gate {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    text-align: center;
-    gap: 18px;
-    padding: 80px 20px;
-  }
-
-  #gate h1 { font-size: 1.8rem; }
-  #gate p { color: var(--text-dim); max-width: 40ch; }
-
-  .gate-form {
-    display: flex;
-    gap: 10px;
-    margin-top: 12px;
+  input[type="text"], textarea, select {
     width: 100%;
-    max-width: 380px;
-  }
-
-  input[type="password"], input[type="text"], textarea, select {
-    width: 100%;
-    background: var(--panel);
+    background: var(--panel-2);
     border: 1px solid var(--line);
     border-radius: 10px;
     padding: 12px 14px;
     color: var(--text);
-    font-family: 'Inter', sans-serif;
-    font-size: 0.95rem;
+    font-family: 'Rajdhani', sans-serif;
+    font-weight: 500;
+    font-size: 1rem;
   }
-
-  textarea { font-family: 'JetBrains Mono', monospace; font-size: 0.88rem; resize: vertical; min-height: 76px; }
-
-  input:focus, textarea:focus { outline: none; border-color: var(--cyan); }
+  textarea { font-family: 'JetBrains Mono', monospace; font-size: 0.86rem; resize: vertical; min-height: 76px; }
+  input:focus, textarea:focus, select:focus { outline: none; border-color: var(--blue); }
 
   .btn {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
+    display: inline-flex; align-items: center; justify-content: center; gap: 8px;
     padding: 12px 22px;
     border-radius: 10px;
-    font-weight: 600;
+    font-weight: 700;
     font-size: 0.92rem;
     cursor: pointer;
     border: none;
     white-space: nowrap;
+    transition: transform 0.15s ease, box-shadow 0.15s ease, filter 0.15s;
   }
-
-  .btn-primary { background: linear-gradient(90deg, var(--cyan), var(--purple)); color: #060810; }
+  .btn-primary { background: linear-gradient(90deg, var(--blue), var(--violet)); color: #060512; }
   .btn-primary:hover { filter: brightness(1.08); }
   .btn-ghost { background: transparent; border: 1px solid var(--line); color: var(--text); }
-  .btn-ghost:hover { border-color: var(--cyan); }
+  .btn-ghost:hover { border-color: var(--blue); color: var(--blue); }
+  .btn-block { width: 100%; }
 
+  /* ---------- Login gate ---------- */
+  #gate {
+    min-height: 100vh;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    text-align: center; gap: 18px; padding: 40px 20px;
+  }
+  #gate .brand-row { display: flex; align-items: center; gap: 12px; font-family: 'Russo One', sans-serif; font-size: 1rem; margin-bottom: 26px; }
+  #gate h1 { font-size: 1.9rem; }
+  #gate p { color: var(--text-dim); max-width: 42ch; }
   #error-msg { color: var(--error); font-size: 0.85rem; min-height: 1.2em; }
 
-  /* ---------- Dashboard ---------- */
+  /* ---------- Dashboard shell ---------- */
   #dashboard { display: none; }
 
-  .dash-head { margin-bottom: 40px; }
-  .dash-head h1 { font-size: 1.9rem; margin-bottom: 10px; }
-  .dash-head p { color: var(--text-dim); }
+  .shell { display: flex; min-height: 100vh; }
+
+  .sidebar {
+    width: var(--sidebar-w);
+    flex-shrink: 0;
+    background: var(--bg-alt);
+    border-right: 1px solid var(--line);
+    display: flex; flex-direction: column;
+    padding: 24px 18px;
+  }
+
+  .brand-row { display: flex; align-items: center; gap: 12px; font-family: 'Russo One', sans-serif; font-size: 0.94rem; margin-bottom: 26px; padding: 0 4px; }
+
+  .side-label { font-family: 'JetBrains Mono', monospace; font-size: 0.66rem; color: var(--text-dimmer); text-transform: uppercase; letter-spacing: 0.12em; padding: 0 8px; margin-bottom: 8px; }
+
+  .guild-select-wrap { margin-bottom: 26px; }
+
+  .side-nav { display: flex; flex-direction: column; gap: 2px; margin-bottom: 26px; }
+  .side-link {
+    display: flex; align-items: center; gap: 12px;
+    padding: 10px 12px;
+    border-radius: 9px;
+    color: var(--text-dim);
+    font-weight: 600;
+    font-size: 0.92rem;
+    cursor: pointer;
+    background: none;
+    border: none;
+    border-left: 2px solid transparent;
+    text-align: left;
+    width: 100%;
+    transition: background 0.15s, color 0.15s;
+  }
+  .side-link .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--text-dimmer); flex-shrink: 0; }
+  .side-link:hover { background: rgba(168,85,247,0.08); color: var(--text); }
+  .side-link.current { color: var(--text); background: linear-gradient(90deg, rgba(63,169,255,0.1), rgba(168,85,247,0.06)); border-left-color: var(--blue); }
+  .side-link.current .dot { background: var(--magenta); box-shadow: 0 0 8px var(--magenta); }
+
+  .sidebar-foot { margin-top: auto; padding-top: 16px; border-top: 1px solid var(--line); }
+  .who-row { font-size: 0.82rem; color: var(--text-dim); padding: 0 8px; margin-bottom: 10px; }
+  .who-row strong { color: var(--text); }
+  .logout-link { color: var(--text-dimmer); font-size: 0.8rem; padding: 0 8px; display: inline-block; }
+  .logout-link:hover { color: var(--error); }
+  .back-home { display: block; color: var(--text-dimmer); font-size: 0.8rem; padding: 8px; margin-top: 6px; }
+  .back-home:hover { color: var(--blue); }
+
+  main { flex: 1; min-width: 0; padding: 40px 5vw 60px; max-width: 820px; }
+
+  .panel-head { margin-bottom: 30px; }
+  .panel-head .section-tag { display: block; font-family: 'JetBrains Mono', monospace; font-size: 0.72rem; color: var(--magenta); text-transform: uppercase; letter-spacing: 0.12em; margin-bottom: 10px; }
+  .panel-head h1 { font-size: 1.7rem; margin-bottom: 10px; }
+  .panel-head p { color: var(--text-dim); }
+
+  .category { display: none; }
+  .category.active { display: block; }
 
   .field-group {
     background: var(--panel);
@@ -152,160 +170,156 @@
     padding: 24px;
     margin-bottom: 20px;
   }
-
-  .field-group h2 {
-    font-size: 1.02rem;
-    margin-bottom: 6px;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-  }
-
-  .field-group .hint {
-    color: var(--text-dimmer);
-    font-size: 0.82rem;
-    margin-bottom: 14px;
-  }
-
-  .field-group .hint code {
-    color: var(--cyan);
-    background: rgba(76,243,255,0.08);
-    padding: 1px 6px;
-    border-radius: 5px;
-  }
-
   .field { margin-bottom: 16px; }
   .field:last-child { margin-bottom: 0; }
-  .field label {
-    display: block;
-    font-size: 0.82rem;
-    color: var(--text-dim);
-    margin-bottom: 6px;
-  }
+  .field label { display: block; font-size: 0.82rem; color: var(--text-dim); margin-bottom: 6px; font-weight: 600; }
+  .hint { color: var(--text-dimmer); font-size: 0.8rem; margin-bottom: 8px; }
+  .hint code { color: var(--blue); background: rgba(63,169,255,0.08); padding: 1px 6px; border-radius: 5px; }
 
   .save-bar {
-    position: sticky;
-    bottom: 0;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    background: rgba(10,13,20,0.9);
+    position: sticky; bottom: 0;
+    display: flex; justify-content: space-between; align-items: center;
+    background: rgba(7,6,13,0.9);
     backdrop-filter: blur(10px);
     border: 1px solid var(--line);
     border-radius: 14px;
     padding: 16px 20px;
-    margin-top: 30px;
+    margin-top: 10px;
   }
-
   #status-msg { font-size: 0.85rem; color: var(--text-dim); }
   #status-msg.success { color: var(--success); }
   #status-msg.error { color: var(--error); }
 
   .icon { width: 20px; height: 20px; display: inline-block; }
 
-  @media (max-width: 600px) {
-    .gate-form { flex-direction: column; }
+  @media (max-width: 780px) {
+    .shell { flex-direction: column; }
+    .sidebar { width: 100%; flex-direction: row; flex-wrap: wrap; align-items: center; padding: 16px 5vw; }
+    .brand-row { margin-bottom: 0; margin-right: auto; }
+    .guild-select-wrap { width: 100%; order: 3; margin: 14px 0 0; }
+    .side-nav { flex-direction: row; margin-bottom: 0; order: 4; width: 100%; flex-wrap: wrap; }
+    .side-label { display: none; }
+    .sidebar-foot { margin-top: 0; margin-left: auto; border: none; padding: 0; order: 2; }
+    .who-row { margin-bottom: 0; }
+    main { padding: 30px 5vw 50px; }
     .save-bar { flex-direction: column; gap: 12px; align-items: stretch; text-align: center; }
   }
 </style>
 </head>
 <body>
 
-<nav>
-  <div class="brand">
-    <div class="brand-mark"></div>
+<div id="gate">
+  <div class="brand-row">
+    <div class="brand-mark hex"></div>
     colosobotmodo
   </div>
-  <a href="index.html" class="back-link">← Retour au site</a>
-</nav>
+  <h1>Tableau de bord <span class="glow-text">du bot</span></h1>
+  <p>Connecte-toi avec Discord pour modifier les messages des serveurs où tu es administrateur.</p>
+  <a class="btn btn-primary" id="login-btn" href="#">
+    <svg class="icon" viewBox="0 0 24 24" fill="currentColor"><path d="M20.317 4.369a19.79 19.79 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.058a.082.082 0 0 0 .031.056 19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028c.462-.63.874-1.295 1.226-1.994a.076.076 0 0 0-.041-.106 13.1 13.1 0 0 1-1.872-.892.077.077 0 0 1-.008-.128c.126-.094.252-.192.372-.291a.074.074 0 0 1 .078-.01c3.927 1.793 8.18 1.793 12.061 0a.074.074 0 0 1 .079.009c.12.099.246.198.373.292a.077.077 0 0 1-.006.127c-.598.35-1.22.645-1.873.893a.076.076 0 0 0-.04.106c.36.698.772 1.362 1.225 1.993a.077.077 0 0 0 .084.029 19.84 19.84 0 0 0 6.002-3.03.077.077 0 0 0 .032-.055c.5-5.177-.838-9.674-3.549-13.66a.06.06 0 0 0-.031-.028Z"/></svg>
+    Se connecter avec Discord
+  </a>
+  <div id="error-msg"></div>
+  <a href="index.html" class="back-home" style="margin-top:14px;">← Retour au site</a>
+</div>
 
-<main>
+<div id="dashboard">
+  <div class="shell">
+    <aside class="sidebar">
+      <div class="brand-row">
+        <div class="brand-mark hex"></div>
+        colosobotmodo
+      </div>
 
-  <div id="gate">
-    <h1>Tableau de bord <span class="glow-text">du bot</span></h1>
-    <p>Connecte-toi avec Discord pour modifier les messages des serveurs où tu es administrateur.</p>
-    <a class="btn btn-primary" id="login-btn" href="#">
-      <svg class="icon" viewBox="0 0 24 24" fill="currentColor"><path d="M20.317 4.369a19.79 19.79 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.058a.082.082 0 0 0 .031.056 19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028c.462-.63.874-1.295 1.226-1.994a.076.076 0 0 0-.041-.106 13.1 13.1 0 0 1-1.872-.892.077.077 0 0 1-.008-.128c.126-.094.252-.192.372-.291a.074.074 0 0 1 .078-.01c3.927 1.793 8.18 1.793 12.061 0a.074.074 0 0 1 .079.009c.12.099.246.198.373.292a.077.077 0 0 1-.006.127c-.598.35-1.22.645-1.873.893a.076.076 0 0 0-.04.106c.36.698.772 1.362 1.225 1.993a.077.077 0 0 0 .084.029 19.84 19.84 0 0 0 6.002-3.03.077.077 0 0 0 .032-.055c.5-5.177-.838-9.674-3.549-13.66a.06.06 0 0 0-.031-.028Z"/></svg>
-      Se connecter avec Discord
-    </a>
-    <div id="error-msg"></div>
-  </div>
-
-  <div id="dashboard">
-    <div class="dash-head">
-      <h1>Messages du <span class="glow-text">bot</span></h1>
-      <p>Modifie les textes ci-dessous, puis clique sur "Enregistrer" en bas de page. Les changements s'appliquent immédiatement sur ton serveur.</p>
-      <p style="margin-top:10px;font-size:0.85rem;">Connecté en tant que <strong id="whoami"></strong> · <a href="#" id="logout-link" class="back-link">se déconnecter</a></p>
-    </div>
-
-    <div class="field-group">
-      <h2>🖥️ Serveur</h2>
-      <div class="hint">Choisis le serveur Discord à modifier.</div>
-      <div class="field">
-        <label for="guild-select">Serveur ciblé</label>
+      <div class="guild-select-wrap">
+        <div class="side-label">Serveur ciblé</div>
         <select id="guild-select"></select>
       </div>
-    </div>
 
-    <div class="field-group">
-      <h2>👋 Bienvenue</h2>
-      <div class="field">
-        <label for="welcome_message">Message à l'arrivée d'un membre</label>
-        <div class="hint">Utilise <code>{member}</code>, <code>{server}</code>, <code>{count}</code></div>
-        <textarea id="welcome_message"></textarea>
+      <div class="side-nav" id="category-nav">
+        <button class="side-link current" data-cat="bienvenue"><span class="dot"></span> 👋 Bienvenue</button>
+        <button class="side-link" data-cat="niveaux"><span class="dot"></span> 📈 Niveaux</button>
+        <button class="side-link" data-cat="tickets"><span class="dot"></span> 🎫 Tickets</button>
+        <button class="side-link" data-cat="sondages"><span class="dot"></span> 📊 Sondages</button>
       </div>
-      <div class="field">
-        <label for="leave_message">Message au départ d'un membre</label>
-        <div class="hint">Utilise <code>{member}</code></div>
-        <textarea id="leave_message"></textarea>
-      </div>
-    </div>
 
-    <div class="field-group">
-      <h2>📈 Niveaux</h2>
-      <div class="field">
-        <label for="levelup_message">Message de passage de niveau</label>
-        <div class="hint">Utilise <code>{member}</code>, <code>{level}</code></div>
-        <textarea id="levelup_message"></textarea>
+      <div class="sidebar-foot">
+        <div class="who-row">Connecté : <strong id="whoami"></strong></div>
+        <a href="#" id="logout-link" class="logout-link">Se déconnecter</a>
+        <a href="index.html" class="back-home">← Retour au site</a>
       </div>
-    </div>
+    </aside>
 
-    <div class="field-group">
-      <h2>🎫 Tickets</h2>
-      <div class="field">
-        <label for="ticket_panel_title">Titre du panneau de tickets</label>
-        <input type="text" id="ticket_panel_title">
+    <main>
+      <div class="panel-head">
+        <span class="section-tag">// Messages du bot</span>
+        <h1 id="panel-title">Bienvenue</h1>
+        <p>Modifie les textes ci-dessous, puis clique sur "Enregistrer". Les changements s'appliquent immédiatement sur ton serveur.</p>
       </div>
-      <div class="field">
-        <label for="ticket_panel_description">Description du panneau de tickets</label>
-        <textarea id="ticket_panel_description"></textarea>
-      </div>
-      <div class="field">
-        <label for="ticket_welcome_message">Message dans un ticket ouvert</label>
-        <div class="hint">Utilise <code>{member}</code></div>
-        <textarea id="ticket_welcome_message"></textarea>
-      </div>
-    </div>
 
-    <div class="field-group">
-      <h2>📊 Sondages</h2>
-      <div class="field">
-        <label for="poll_footer">Pied de page des sondages</label>
-        <div class="hint">Utilise <code>{author}</code></div>
-        <input type="text" id="poll_footer">
+      <div class="category active" data-cat="bienvenue">
+        <div class="field-group">
+          <div class="field">
+            <label for="welcome_message">Message à l'arrivée d'un membre</label>
+            <div class="hint">Utilise <code>{member}</code>, <code>{server}</code>, <code>{count}</code></div>
+            <textarea id="welcome_message"></textarea>
+          </div>
+          <div class="field">
+            <label for="leave_message">Message au départ d'un membre</label>
+            <div class="hint">Utilise <code>{member}</code></div>
+            <textarea id="leave_message"></textarea>
+          </div>
+        </div>
       </div>
-    </div>
 
-    <div class="save-bar">
-      <span id="status-msg"></span>
-      <div style="display:flex; gap:10px;">
-        <button class="btn btn-ghost" id="reload-btn">Recharger</button>
-        <button class="btn btn-primary" id="save-btn">Enregistrer</button>
+      <div class="category" data-cat="niveaux">
+        <div class="field-group">
+          <div class="field">
+            <label for="levelup_message">Message de passage de niveau</label>
+            <div class="hint">Utilise <code>{member}</code>, <code>{level}</code></div>
+            <textarea id="levelup_message"></textarea>
+          </div>
+        </div>
       </div>
-    </div>
+
+      <div class="category" data-cat="tickets">
+        <div class="field-group">
+          <div class="field">
+            <label for="ticket_panel_title">Titre du panneau de tickets</label>
+            <input type="text" id="ticket_panel_title">
+          </div>
+          <div class="field">
+            <label for="ticket_panel_description">Description du panneau de tickets</label>
+            <textarea id="ticket_panel_description"></textarea>
+          </div>
+          <div class="field">
+            <label for="ticket_welcome_message">Message dans un ticket ouvert</label>
+            <div class="hint">Utilise <code>{member}</code></div>
+            <textarea id="ticket_welcome_message"></textarea>
+          </div>
+        </div>
+      </div>
+
+      <div class="category" data-cat="sondages">
+        <div class="field-group">
+          <div class="field">
+            <label for="poll_footer">Pied de page des sondages</label>
+            <div class="hint">Utilise <code>{author}</code></div>
+            <input type="text" id="poll_footer">
+          </div>
+        </div>
+      </div>
+
+      <div class="save-bar">
+        <span id="status-msg"></span>
+        <div style="display:flex; gap:10px;">
+          <button class="btn btn-ghost" id="reload-btn">Recharger</button>
+          <button class="btn btn-primary" id="save-btn">Enregistrer</button>
+        </div>
+      </div>
+    </main>
   </div>
-
-</main>
+</div>
 
 <script>
   // URL publique de l'API (Railway → Settings → Networking → Generate Domain)
@@ -316,6 +330,13 @@
     "ticket_panel_title", "ticket_panel_description", "ticket_welcome_message",
     "poll_footer",
   ];
+
+  const catTitles = {
+    bienvenue: "👋 Bienvenue",
+    niveaux: "📈 Niveaux",
+    tickets: "🎫 Tickets",
+    sondages: "📊 Sondages",
+  };
 
   let sessionToken = "";
   let currentGuildId = "";
@@ -328,6 +349,7 @@
   const loginBtn = document.getElementById("login-btn");
   const whoami = document.getElementById("whoami");
   const logoutLink = document.getElementById("logout-link");
+  const panelTitle = document.getElementById("panel-title");
 
   loginBtn.href = `${API_BASE_URL}/api/auth/login`;
 
@@ -342,9 +364,7 @@
   }
 
   async function fetchConfig(guildId) {
-    const res = await fetch(`${API_BASE_URL}/api/config?guild_id=${guildId}`, {
-      headers: authHeaders(),
-    });
+    const res = await fetch(`${API_BASE_URL}/api/config?guild_id=${guildId}`, { headers: authHeaders() });
     if (!res.ok) throw new Error("fetch failed");
     return res.json();
   }
@@ -391,6 +411,17 @@
     fillForm(config);
   }
 
+  function switchCategory(cat) {
+    document.querySelectorAll(".category").forEach((el) => el.classList.toggle("active", el.dataset.cat === cat));
+    document.querySelectorAll("#category-nav .side-link").forEach((el) => el.classList.toggle("current", el.dataset.cat === cat));
+    panelTitle.textContent = catTitles[cat] || "";
+  }
+
+  document.getElementById("category-nav").addEventListener("click", (e) => {
+    const btn = e.target.closest(".side-link");
+    if (btn) switchCategory(btn.dataset.cat);
+  });
+
   async function enterDashboard(me) {
     if (!me.guilds || me.guilds.length === 0) {
       errorMsg.textContent = "Tu n'es administrateur sur aucun serveur où le bot est présent.";
@@ -404,7 +435,6 @@
   }
 
   async function init() {
-    // Le token arrive dans l'URL juste après la connexion Discord (#token=...)
     const hashMatch = window.location.hash.match(/token=([^&]+)/);
     if (hashMatch) {
       sessionToken = decodeURIComponent(hashMatch[1]);
@@ -414,7 +444,7 @@
       sessionToken = sessionStorage.getItem("colosobot_token") || "";
     }
 
-    if (!sessionToken) return; // reste sur l'écran de connexion
+    if (!sessionToken) return;
 
     try {
       const me = await fetchMe();

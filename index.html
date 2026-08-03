@@ -3,581 +3,531 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Colosobotmodo — Le bot tout-en-un pour ton serveur Discord</title>
+<title>colosobotmodo — Le bot tout-en-un pour ton serveur Discord</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Russo+One&family=Rajdhani:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
   :root {
-    --bg: #0a0d14;
-    --bg-alt: #10141f;
-    --panel: #141924;
-    --line: #232b3d;
-    --cyan: #4cf3ff;
-    --purple: #b14cff;
-    --pink: #ff4cd8;
-    --text: #e8eef5;
-    --text-dim: #8993a6;
-    --text-dimmer: #5b6479;
+    --bg: #07060d;
+    --bg-alt: #0d0a18;
+    --panel: #14101f;
+    --panel-2: #1b1630;
+    --line: #2a2242;
+    --blue: #3fa9ff;
+    --violet: #a855f7;
+    --magenta: #ff3ec8;
+    --text: #f2f0fa;
+    --text-dim: #9d97b8;
+    --text-dimmer: #675f88;
+    --success: #33e0a0;
+    --sidebar-w: 236px;
   }
 
   * { margin: 0; padding: 0; box-sizing: border-box; }
-
   html { scroll-behavior: smooth; }
 
   body {
     background: var(--bg);
     color: var(--text);
-    font-family: 'Inter', sans-serif;
+    font-family: 'Rajdhani', sans-serif;
+    font-weight: 500;
+    font-size: 1.05rem;
     line-height: 1.6;
     overflow-x: hidden;
   }
 
-  h1, h2, h3, .display {
-    font-family: 'Chakra Petch', sans-serif;
-    letter-spacing: 0.01em;
-  }
-
-  code, .mono {
-    font-family: 'JetBrains Mono', monospace;
-  }
-
+  h1, h2, h3, .display { font-family: 'Russo One', sans-serif; font-weight: 400; letter-spacing: 0.01em; }
+  code, .mono { font-family: 'JetBrains Mono', monospace; }
   a { text-decoration: none; color: inherit; }
+  ul { list-style: none; }
 
   .glow-text {
-    background: linear-gradient(90deg, var(--cyan), var(--purple));
+    background: linear-gradient(90deg, var(--blue), var(--violet) 60%, var(--magenta));
     -webkit-background-clip: text;
     background-clip: text;
     color: transparent;
   }
 
-  /* ---------- Background ambience ---------- */
-  .bg-grid {
+  /* ---------- Ambient background ---------- */
+  .bg-glow-a, .bg-glow-b {
     position: fixed;
-    inset: 0;
-    z-index: -2;
-    background-image:
-      linear-gradient(var(--line) 1px, transparent 1px),
-      linear-gradient(90deg, var(--line) 1px, transparent 1px);
-    background-size: 64px 64px;
-    opacity: 0.35;
-    mask-image: radial-gradient(ellipse 80% 60% at 50% 0%, black 20%, transparent 75%);
-  }
-
-  .bg-glow {
-    position: fixed;
-    top: -20%;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 1200px;
-    height: 800px;
-    background: radial-gradient(ellipse at center, rgba(177,76,255,0.18), transparent 65%);
+    border-radius: 50%;
+    filter: blur(90px);
     z-index: -1;
     pointer-events: none;
   }
+  .bg-glow-a { top: -12%; left: 20%; width: 640px; height: 640px; background: radial-gradient(circle, rgba(63,169,255,0.16), transparent 70%); }
+  .bg-glow-b { bottom: -15%; right: 5%; width: 620px; height: 620px; background: radial-gradient(circle, rgba(255,62,200,0.12), transparent 70%); }
 
-  /* ---------- Nav ---------- */
-  nav {
-    position: sticky;
-    top: 0;
-    z-index: 50;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 20px 6vw;
-    background: rgba(10, 13, 20, 0.75);
-    backdrop-filter: blur(10px);
-    border-bottom: 1px solid var(--line);
+  /* ---------- Hex brand mark ---------- */
+  .hex {
+    clip-path: polygon(25% 5%, 75% 5%, 100% 50%, 75% 95%, 25% 95%, 0% 50%);
   }
-
-  .brand {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    font-family: 'Chakra Petch', sans-serif;
-    font-weight: 700;
-    font-size: 1.15rem;
-  }
-
   .brand-mark {
-    width: 34px;
-    height: 34px;
-    border-radius: 9px;
-    background: conic-gradient(from 180deg, var(--cyan), var(--purple), var(--pink), var(--cyan));
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    box-shadow: 0 0 22px rgba(76, 243, 255, 0.4);
+    width: 38px; height: 38px;
+    background: conic-gradient(from 180deg, var(--blue), var(--violet), var(--magenta), var(--blue));
+    display: flex; align-items: center; justify-content: center;
+    animation: spin 10s linear infinite;
+    flex-shrink: 0;
   }
-
   .brand-mark::after {
     content: "";
-    width: 22px;
-    height: 22px;
-    border-radius: 6px;
-    background: var(--bg);
+    width: 27px; height: 27px;
+    background: var(--bg-alt);
+    clip-path: polygon(25% 5%, 75% 5%, 100% 50%, 75% 95%, 25% 95%, 0% 50%);
   }
+  @keyframes spin { to { transform: rotate(360deg); } }
 
-  .nav-links {
+  /* ---------- Layout: sidebar + main ---------- */
+  .shell { display: flex; min-height: 100vh; }
+
+  .sidebar {
+    width: var(--sidebar-w);
+    flex-shrink: 0;
+    position: fixed;
+    top: 0; bottom: 0; left: 0;
+    background: var(--bg-alt);
+    border-right: 1px solid var(--line);
     display: flex;
-    gap: 32px;
-    font-size: 0.92rem;
-    color: var(--text-dim);
+    flex-direction: column;
+    padding: 26px 20px;
+    z-index: 100;
   }
 
-  .nav-links a:hover { color: var(--text); }
+  .brand-row {
+    display: flex; align-items: center; gap: 12px;
+    font-family: 'Russo One', sans-serif;
+    font-size: 1rem;
+    margin-bottom: 40px;
+    padding: 0 4px;
+  }
+
+  .side-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.68rem;
+    color: var(--text-dimmer);
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    padding: 0 10px;
+    margin-bottom: 10px;
+  }
+
+  .side-nav { display: flex; flex-direction: column; gap: 2px; margin-bottom: 30px; }
+
+  .side-link {
+    display: flex; align-items: center; gap: 12px;
+    padding: 10px 12px;
+    border-radius: 9px;
+    color: var(--text-dim);
+    font-weight: 600;
+    font-size: 0.94rem;
+    border-left: 2px solid transparent;
+    transition: background 0.15s, color 0.15s, border-color 0.15s;
+  }
+  .side-link .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--text-dimmer); flex-shrink: 0; transition: background 0.15s, box-shadow 0.15s; }
+  .side-link:hover { background: rgba(168,85,247,0.08); color: var(--text); }
+  .side-link:hover .dot { background: var(--blue); }
+  .side-link.current { color: var(--text); background: linear-gradient(90deg, rgba(63,169,255,0.1), rgba(168,85,247,0.06)); border-left-color: var(--blue); }
+  .side-link.current .dot { background: var(--magenta); box-shadow: 0 0 8px var(--magenta); }
+
+  .sidebar-foot { margin-top: auto; display: flex; flex-direction: column; gap: 12px; }
+
+  .status-chip {
+    display: flex; align-items: center; gap: 8px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.72rem;
+    color: var(--text-dimmer);
+    padding: 0 10px;
+  }
+  .status-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--success); box-shadow: 0 0 7px var(--success); }
+
+  main { margin-left: var(--sidebar-w); flex: 1; min-width: 0; }
 
   .btn {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    padding: 11px 22px;
+    display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+    padding: 12px 24px;
     border-radius: 10px;
-    font-weight: 600;
-    font-size: 0.92rem;
+    font-weight: 700;
+    font-size: 0.94rem;
     cursor: pointer;
-    transition: transform 0.15s ease, box-shadow 0.15s ease;
+    border: none;
+    transition: transform 0.15s ease, box-shadow 0.15s ease, filter 0.15s ease;
   }
-
-  .btn-primary {
-    background: linear-gradient(90deg, var(--cyan), var(--purple));
-    color: #060810;
-    box-shadow: 0 0 0 rgba(76, 243, 255, 0);
-  }
-
-  .btn-primary:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 30px rgba(76, 243, 255, 0.25);
-  }
-
-  .btn-ghost {
-    border: 1px solid var(--line);
-    color: var(--text);
-  }
-
-  .btn-ghost:hover { border-color: var(--cyan); }
+  .btn-primary { background: linear-gradient(90deg, var(--blue), var(--violet)); color: #060512; box-shadow: 0 0 0 rgba(63,169,255,0); }
+  .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 10px 34px rgba(168,85,247,0.32); }
+  .btn-ghost { border: 1px solid var(--line); color: var(--text); background: transparent; }
+  .btn-ghost:hover { border-color: var(--blue); color: var(--blue); }
+  .btn-block { width: 100%; }
 
   /* ---------- Hero ---------- */
   .hero {
-    padding: 110px 6vw 90px;
+    padding: 88px 5vw 70px;
     display: grid;
     grid-template-columns: 1.1fr 0.9fr;
-    gap: 60px;
+    gap: 56px;
     align-items: center;
-    max-width: 1280px;
-    margin: 0 auto;
+    max-width: 1180px;
   }
 
   .eyebrow {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
+    display: inline-flex; align-items: center; gap: 8px;
     font-family: 'JetBrains Mono', monospace;
-    font-size: 0.78rem;
-    color: var(--cyan);
-    border: 1px solid rgba(76, 243, 255, 0.3);
-    background: rgba(76, 243, 255, 0.06);
+    font-size: 0.76rem;
+    color: var(--blue);
+    border: 1px solid rgba(63,169,255,0.3);
+    background: rgba(63,169,255,0.06);
     padding: 6px 14px;
     border-radius: 100px;
     margin-bottom: 22px;
   }
+  .pulse-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--success); box-shadow: 0 0 8px var(--success); animation: pulse 1.8s ease-in-out infinite; }
+  @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.35; } }
 
-  .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--cyan); box-shadow: 0 0 8px var(--cyan); }
+  .hero h1 { font-size: clamp(2.2rem, 3.6vw, 3.2rem); line-height: 1.14; margin-bottom: 22px; }
+  .hero p { color: var(--text-dim); font-size: 1.1rem; max-width: 46ch; margin-bottom: 32px; }
+  .hero-actions { display: flex; gap: 14px; flex-wrap: wrap; margin-bottom: 36px; }
 
-  .hero h1 {
-    font-size: clamp(2.4rem, 4.4vw, 3.6rem);
-    font-weight: 700;
-    line-height: 1.08;
-    margin-bottom: 22px;
-  }
+  .hero-meta { display: flex; gap: 30px; font-size: 0.86rem; color: var(--text-dimmer); }
+  .hero-meta strong { color: var(--text); font-family: 'Russo One', sans-serif; font-size: 1.1rem; display: block; }
 
-  .hero p {
-    color: var(--text-dim);
-    font-size: 1.08rem;
-    max-width: 46ch;
-    margin-bottom: 34px;
-  }
-
-  .hero-actions { display: flex; gap: 14px; flex-wrap: wrap; margin-bottom: 38px; }
-
-  .hero-meta {
-    display: flex;
-    gap: 28px;
-    font-size: 0.86rem;
-    color: var(--text-dimmer);
-  }
-
-  .hero-meta strong { color: var(--text); font-family: 'Chakra Petch', sans-serif; }
-
-  /* ---------- Avatar panel ---------- */
-  .avatar-wrap {
-    position: relative;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-
+  .avatar-wrap { position: relative; display: flex; align-items: center; justify-content: center; }
   .avatar-glow {
-    position: absolute;
-    width: 340px;
-    height: 340px;
-    border-radius: 50%;
-    background: conic-gradient(from 0deg, var(--cyan), var(--purple), var(--pink), var(--cyan));
-    filter: blur(60px);
-    opacity: 0.45;
+    position: absolute; width: 300px; height: 300px;
+    background: conic-gradient(from 0deg, var(--blue), var(--violet), var(--magenta), var(--blue));
+    filter: blur(56px); opacity: 0.5;
     animation: spin 12s linear infinite;
   }
-
-  @keyframes spin { to { transform: rotate(360deg); } }
-
   .avatar-frame {
-    position: relative;
-    width: 280px;
-    height: 280px;
-    border-radius: 32px;
-    background: linear-gradient(160deg, var(--panel), #0d1119);
+    position: relative; width: 270px; height: 270px;
+    background: linear-gradient(160deg, var(--panel), #0a0814);
     border: 1px solid var(--line);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    box-shadow: 0 30px 80px rgba(0,0,0,0.5);
+    display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 30px 80px rgba(0,0,0,0.55);
   }
-
-  .avatar-frame svg { width: 62%; height: 62%; }
-
+  .avatar-frame.hex { clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%); }
+  .avatar-frame svg { width: 58%; height: 58%; }
   .status-pill {
-    position: absolute;
-    bottom: -18px;
-    right: -18px;
-    background: var(--bg-alt);
-    border: 1px solid var(--line);
-    border-radius: 100px;
-    padding: 10px 16px;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 0.78rem;
+    position: absolute; bottom: -14px; right: -8px;
+    background: var(--bg-alt); border: 1px solid var(--line);
+    border-radius: 100px; padding: 10px 16px;
+    display: flex; align-items: center; gap: 8px;
+    font-family: 'JetBrains Mono', monospace; font-size: 0.78rem;
   }
 
-  .status-dot { width: 8px; height: 8px; border-radius: 50%; background: #3ddc84; box-shadow: 0 0 8px #3ddc84; }
+  /* ---------- Sections ---------- */
+  section { padding: 70px 5vw; max-width: 1180px; }
 
-  /* ---------- Section shell ---------- */
-  section { padding: 90px 6vw; max-width: 1280px; margin: 0 auto; }
-
-  .section-head { max-width: 640px; margin-bottom: 56px; }
-
+  .section-head { margin-bottom: 44px; max-width: 60ch; }
   .section-tag {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 0.78rem;
-    color: var(--purple);
-    margin-bottom: 14px;
-    display: block;
+    display: block; font-family: 'JetBrains Mono', monospace;
+    font-size: 0.76rem; color: var(--magenta);
+    text-transform: uppercase; letter-spacing: 0.14em;
+    margin-bottom: 12px;
   }
+  .section-head h2 { font-size: clamp(1.6rem, 2.6vw, 2.1rem); margin-bottom: 12px; }
+  .section-head p { color: var(--text-dim); }
 
-  .section-head h2 { font-size: clamp(1.7rem, 3vw, 2.3rem); margin-bottom: 14px; }
-  .section-head p { color: var(--text-dim); font-size: 1.02rem; }
-
-  /* ---------- Features grid ---------- */
-  .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+  .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
 
   .card {
     background: var(--panel);
     border: 1px solid var(--line);
     border-radius: 16px;
-    padding: 28px;
-    transition: border-color 0.2s ease, transform 0.2s ease;
-  }
-
-  .card:hover { border-color: var(--cyan); transform: translateY(-4px); }
-
-  .card-icon {
-    width: 44px;
-    height: 44px;
-    border-radius: 12px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin-bottom: 20px;
-    font-size: 1.3rem;
-    background: rgba(76, 243, 255, 0.08);
-    border: 1px solid rgba(76, 243, 255, 0.2);
-  }
-
-  .card h3 { font-size: 1.08rem; margin-bottom: 10px; }
-  .card p { color: var(--text-dim); font-size: 0.92rem; }
-
-  /* ---------- Terminal / commands signature ---------- */
-  .terminal {
-    background: var(--bg-alt);
-    border: 1px solid var(--line);
-    border-radius: 18px;
+    padding: 26px;
+    position: relative;
     overflow: hidden;
-    box-shadow: 0 40px 100px rgba(0,0,0,0.4);
+    transition: border-color 0.2s, transform 0.2s;
   }
-
-  .terminal-bar {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    padding: 14px 18px;
-    border-bottom: 1px solid var(--line);
-    background: var(--panel);
+  .card::before {
+    content: "";
+    position: absolute; top: 0; left: 0; right: 0; height: 2px;
+    background: linear-gradient(90deg, var(--blue), var(--violet), var(--magenta));
+    opacity: 0; transition: opacity 0.2s;
   }
+  .card:hover { border-color: rgba(168,85,247,0.4); transform: translateY(-3px); }
+  .card:hover::before { opacity: 1; }
+  .card-icon {
+    width: 40px; height: 40px;
+    display: flex; align-items: center; justify-content: center;
+    background: var(--panel-2);
+    clip-path: polygon(25% 5%, 75% 5%, 100% 50%, 75% 95%, 25% 95%, 0% 50%);
+    font-size: 1.15rem; margin-bottom: 16px;
+  }
+  .card h3 { font-size: 1.05rem; margin-bottom: 8px; font-family: 'Rajdhani', sans-serif; font-weight: 700; }
+  .card p { color: var(--text-dim); font-size: 0.94rem; }
 
+  /* ---------- Terminal ---------- */
+  .terminal { background: var(--panel); border: 1px solid var(--line); border-radius: 16px; overflow: hidden; }
+  .terminal-bar { display: flex; align-items: center; padding: 14px 18px; border-bottom: 1px solid var(--line); background: var(--panel-2); }
   .terminal-dot { width: 11px; height: 11px; border-radius: 50%; }
-
-  .terminal-tabs {
-    margin-left: 16px;
-    display: flex;
-    gap: 22px;
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 0.8rem;
-    color: var(--text-dimmer);
-  }
-
-  .terminal-tabs .active { color: var(--cyan); }
-
-  .terminal-body { padding: 26px 28px; display: flex; flex-direction: column; gap: 18px; }
-
-  .cmd-row {
-    display: grid;
-    grid-template-columns: 190px 1fr;
-    gap: 18px;
-    align-items: baseline;
-    font-size: 0.9rem;
-  }
-
-  .cmd-name {
-    font-family: 'JetBrains Mono', monospace;
-    color: var(--cyan);
-    background: rgba(76, 243, 255, 0.06);
-    padding: 5px 10px;
-    border-radius: 6px;
-    width: fit-content;
-  }
-
+  .terminal-tabs { margin-left: 16px; display: flex; gap: 22px; font-family: 'JetBrains Mono', monospace; font-size: 0.8rem; color: var(--text-dimmer); }
+  .terminal-tabs .active { color: var(--blue); }
+  .terminal-body { padding: 26px 28px; display: flex; flex-direction: column; gap: 16px; }
+  .cmd-row { display: grid; grid-template-columns: 180px 1fr; gap: 18px; align-items: baseline; font-size: 0.9rem; }
+  .cmd-name { font-family: 'JetBrains Mono', monospace; color: var(--blue); background: rgba(63,169,255,0.08); padding: 5px 10px; border-radius: 6px; width: fit-content; }
   .cmd-desc { color: var(--text-dim); }
-
-  .cmd-group-label {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 0.74rem;
-    color: var(--purple);
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-    margin-top: 6px;
-  }
+  .cmd-group-label { font-family: 'JetBrains Mono', monospace; font-size: 0.74rem; color: var(--magenta); text-transform: uppercase; letter-spacing: 0.1em; margin-top: 6px; }
 
   /* ---------- CTA ---------- */
   .cta {
-    background: linear-gradient(135deg, rgba(76,243,255,0.08), rgba(177,76,255,0.1));
+    background: linear-gradient(135deg, rgba(63,169,255,0.08), rgba(168,85,247,0.1), rgba(255,62,200,0.06));
     border: 1px solid var(--line);
-    border-radius: 24px;
-    padding: 70px 6vw;
+    border-radius: 22px;
+    padding: 64px 5vw;
     text-align: center;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 22px;
+    display: flex; flex-direction: column; align-items: center; gap: 20px;
   }
-
-  .cta h2 { font-size: clamp(1.6rem, 3vw, 2.2rem); max-width: 24ch; }
+  .cta h2 { font-size: clamp(1.5rem, 2.6vw, 2rem); max-width: 22ch; }
   .cta p { color: var(--text-dim); max-width: 50ch; }
 
-  /* ---------- Footer ---------- */
   footer {
-    padding: 40px 6vw 50px;
+    padding: 36px 5vw 50px;
     border-top: 1px solid var(--line);
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    color: var(--text-dimmer);
-    font-size: 0.85rem;
-    max-width: 1280px;
-    margin: 0 auto;
+    display: flex; justify-content: space-between; align-items: center;
+    color: var(--text-dimmer); font-size: 0.85rem; max-width: 1180px;
   }
 
-  /* ---------- Responsive ---------- */
-  @media (max-width: 900px) {
-    .hero { grid-template-columns: 1fr; padding-top: 60px; }
+  /* ---------- Mobile ---------- */
+  .menu-toggle { display: none; }
+
+  @media (max-width: 980px) {
+    .hero { grid-template-columns: 1fr; }
     .avatar-wrap { order: -1; }
     .grid { grid-template-columns: 1fr 1fr; }
-    .cmd-row { grid-template-columns: 1fr; gap: 4px; }
-    footer { flex-direction: column; gap: 12px; text-align: center; }
+  }
+
+  @media (max-width: 860px) {
+    .sidebar {
+      transform: translateX(-100%);
+      transition: transform 0.2s ease;
+      box-shadow: 20px 0 60px rgba(0,0,0,0.5);
+    }
+    .sidebar.open { transform: translateX(0); }
+    main { margin-left: 0; }
+    .menu-toggle {
+      display: flex; align-items: center; gap: 10px;
+      position: sticky; top: 0; z-index: 90;
+      padding: 16px 5vw;
+      background: rgba(7,6,13,0.85);
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid var(--line);
+      font-family: 'Russo One', sans-serif; font-size: 0.92rem;
+    }
+    .menu-toggle button {
+      width: 34px; height: 34px; border-radius: 8px;
+      background: var(--panel); border: 1px solid var(--line); color: var(--text);
+      display: flex; align-items: center; justify-content: center; cursor: pointer;
+    }
+    .scrim { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 99; }
+    .scrim.show { display: block; }
   }
 
   @media (max-width: 600px) {
-    .nav-links { display: none; }
     .grid { grid-template-columns: 1fr; }
+    .cmd-row { grid-template-columns: 1fr; gap: 4px; }
+    footer { flex-direction: column; gap: 12px; text-align: center; }
     .hero-meta { flex-wrap: wrap; gap: 16px; }
   }
 
   @media (prefers-reduced-motion: reduce) {
-    .avatar-glow { animation: none; }
+    .avatar-glow, .brand-mark, .pulse-dot { animation: none; }
   }
 
-  :focus-visible {
-    outline: 2px solid var(--cyan);
-    outline-offset: 3px;
-  }
+  :focus-visible { outline: 2px solid var(--blue); outline-offset: 3px; }
 </style>
 </head>
 <body>
 
-<div class="bg-grid"></div>
-<div class="bg-glow"></div>
+<div class="bg-glow-a"></div>
+<div class="bg-glow-b"></div>
 
-<nav>
-  <div class="brand">
-    <div class="brand-mark"></div>
-    colosobotmodo
-  </div>
-  <div class="nav-links">
-    <a href="#fonctions">Fonctions</a>
-    <a href="#commandes">Commandes</a>
-    <a href="#rejoindre">Ajouter le bot</a>
-    <a href="dashboard.html">Tableau de bord</a>
-  </div>
-  <a href="#" class="btn btn-primary" id="invite-nav">Inviter le bot</a>
-</nav>
+<div class="shell">
+  <aside class="sidebar" id="sidebar">
+    <div class="brand-row">
+      <div class="brand-mark"></div>
+      colosobotmodo
+    </div>
 
-<header class="hero">
-  <div>
-    <span class="eyebrow"><span class="dot"></span>En ligne 24/7</span>
-    <h1>Un bot, <span class="glow-text">toutes les fonctions</span> dont ton serveur a besoin.</h1>
-    <p>colosobotmodo gère ta modération, l'activité de tes membres, tes tickets de support, ta musique et ton ambiance générale — le tout dans un seul bot, gratuit et toujours actif.</p>
-    <div class="hero-actions">
-      <a href="#" class="btn btn-primary" id="invite-hero">+ Ajouter à mon serveur</a>
-      <a href="#commandes" class="btn btn-ghost">Voir les commandes</a>
-    </div>
-    <div class="hero-meta">
-      <div><strong>7</strong> modules</div>
-      <div><strong>25+</strong> commandes slash</div>
-      <div><strong>100%</strong> gratuit</div>
-    </div>
-  </div>
+    <div class="side-label">Navigation</div>
+    <nav class="side-nav">
+      <a href="#" class="side-link current"><span class="dot"></span> Accueil</a>
+      <a href="#fonctions" class="side-link"><span class="dot"></span> Fonctions</a>
+      <a href="#commandes" class="side-link"><span class="dot"></span> Commandes</a>
+      <a href="#rejoindre" class="side-link"><span class="dot"></span> Ajouter le bot</a>
+    </nav>
 
-  <div class="avatar-wrap">
-    <div class="avatar-glow"></div>
-    <div class="avatar-frame">
-      <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <defs>
-          <linearGradient id="botGrad" x1="0" y1="0" x2="100" y2="100" gradientUnits="userSpaceOnUse">
-            <stop offset="0" stop-color="#4cf3ff"/>
-            <stop offset="1" stop-color="#b14cff"/>
-          </linearGradient>
-        </defs>
-        <rect x="20" y="28" width="60" height="48" rx="14" stroke="url(#botGrad)" stroke-width="3"/>
-        <circle cx="38" cy="52" r="5" fill="url(#botGrad)"/>
-        <circle cx="62" cy="52" r="5" fill="url(#botGrad)"/>
-        <path d="M38 64 Q50 72 62 64" stroke="url(#botGrad)" stroke-width="3" stroke-linecap="round"/>
-        <line x1="50" y1="28" x2="50" y2="14" stroke="url(#botGrad)" stroke-width="3" stroke-linecap="round"/>
-        <circle cx="50" cy="10" r="4" fill="url(#botGrad)"/>
-      </svg>
-    </div>
-    <div class="status-pill"><span class="status-dot"></span> Actif</div>
-  </div>
-</header>
+    <div class="side-label">Gestion</div>
+    <nav class="side-nav">
+      <a href="dashboard.html" class="side-link"><span class="dot"></span> Tableau de bord</a>
+    </nav>
 
-<section id="fonctions">
-  <div class="section-head">
-    <span class="section-tag">// FONCTIONS</span>
-    <h2>Sept modules, une seule invitation.</h2>
-    <p>Chaque module fonctionne indépendamment — active seulement ce dont ton serveur a besoin.</p>
-  </div>
-  <div class="grid">
-    <div class="card">
-      <div class="card-icon">🛡️</div>
-      <h3>Modération</h3>
-      <p>Kick, ban, timeout, avertissements et anti-spam automatique, avec un journal de toutes les actions.</p>
+    <div class="sidebar-foot">
+      <div class="status-chip"><span class="status-dot"></span> En ligne 24/7</div>
+      <a href="#" class="btn btn-primary btn-block" id="invite-side">+ Inviter le bot</a>
     </div>
-    <div class="card">
-      <div class="card-icon">📈</div>
-      <h3>Niveaux & XP</h3>
-      <p>Les membres gagnent de l'expérience en discutant, avec un classement pour récompenser les plus actifs.</p>
-    </div>
-    <div class="card">
-      <div class="card-icon">🎫</div>
-      <h3>Tickets</h3>
-      <p>Un panneau avec un bouton pour ouvrir des salons de support privés, fermés en un clic.</p>
-    </div>
-    <div class="card">
-      <div class="card-icon">🎵</div>
-      <h3>Musique</h3>
-      <p>Joue des musiques depuis YouTube directement dans un salon vocal, avec file d'attente.</p>
-    </div>
-    <div class="card">
-      <div class="card-icon">📊</div>
-      <h3>Sondages</h3>
-      <p>Sondages simples ou à choix multiples, avec réactions automatiques jusqu'à 10 options.</p>
-    </div>
-    <div class="card">
-      <div class="card-icon">👋</div>
-      <h3>Bienvenue</h3>
-      <p>Un message personnalisé à chaque arrivée et départ, dans le salon de ton choix.</p>
-    </div>
-  </div>
-</section>
+  </aside>
 
-<section id="commandes">
-  <div class="section-head">
-    <span class="section-tag">// COMMANDES</span>
-    <h2>Toutes les commandes, en un coup d'œil.</h2>
-    <p>Tapez simplement <code class="mono">/</code> dans n'importe quel salon pour les voir apparaître.</p>
-  </div>
+  <div class="scrim" id="scrim"></div>
 
-  <div class="terminal">
-    <div class="terminal-bar">
-      <span class="terminal-dot" style="background:#ff5f57"></span>
-      <span class="terminal-dot" style="background:#febc2e"></span>
-      <span class="terminal-dot" style="background:#28c840"></span>
-      <div class="terminal-tabs">
-        <span class="active">#général</span>
-        <span>discord.gg/ton-serveur</span>
+  <main>
+    <div class="menu-toggle">
+      <button id="menu-btn" aria-label="Ouvrir le menu">☰</button>
+      colosobotmodo
+    </div>
+
+    <header class="hero">
+      <div>
+        <span class="eyebrow"><span class="pulse-dot"></span>En ligne 24/7</span>
+        <h1>Un bot, <span class="glow-text">toutes les fonctions</span> dont ton serveur a besoin.</h1>
+        <p>colosobotmodo gère ta modération, l'activité de tes membres, tes tickets de support, ta musique et ton ambiance générale — le tout dans un seul bot, gratuit et toujours actif.</p>
+        <div class="hero-actions">
+          <a href="#" class="btn btn-primary" id="invite-hero">+ Ajouter à mon serveur</a>
+          <a href="#commandes" class="btn btn-ghost">Voir les commandes</a>
+        </div>
+        <div class="hero-meta">
+          <div><strong>7</strong>modules</div>
+          <div><strong>25+</strong>commandes slash</div>
+          <div><strong>100%</strong>gratuit</div>
+        </div>
       </div>
-    </div>
-    <div class="terminal-body">
-      <div class="cmd-group-label">Modération</div>
-      <div class="cmd-row"><span class="cmd-name">/kick</span><span class="cmd-desc">Expulse un membre du serveur</span></div>
-      <div class="cmd-row"><span class="cmd-name">/ban</span><span class="cmd-desc">Bannit un membre, avec /unban pour revenir en arrière</span></div>
-      <div class="cmd-row"><span class="cmd-name">/timeout</span><span class="cmd-desc">Mute un membre pendant une durée définie</span></div>
-      <div class="cmd-row"><span class="cmd-name">/warn</span><span class="cmd-desc">Avertit un membre et garde un historique</span></div>
-      <div class="cmd-row"><span class="cmd-name">/clear</span><span class="cmd-desc">Supprime plusieurs messages d'un coup</span></div>
 
-      <div class="cmd-group-label">Communauté</div>
-      <div class="cmd-row"><span class="cmd-name">/level</span><span class="cmd-desc">Affiche ton niveau et ton expérience</span></div>
-      <div class="cmd-row"><span class="cmd-name">/leaderboard</span><span class="cmd-desc">Classement des membres les plus actifs</span></div>
-      <div class="cmd-row"><span class="cmd-name">/ticketpanel</span><span class="cmd-desc">Envoie le panneau d'ouverture de tickets</span></div>
-      <div class="cmd-row"><span class="cmd-name">/poll</span><span class="cmd-desc">Crée un sondage rapide</span></div>
+      <div class="avatar-wrap">
+        <div class="avatar-glow"></div>
+        <div class="avatar-frame hex">
+          <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <linearGradient id="botGrad" x1="0" y1="0" x2="100" y2="100" gradientUnits="userSpaceOnUse">
+                <stop offset="0" stop-color="#3fa9ff"/>
+                <stop offset="0.55" stop-color="#a855f7"/>
+                <stop offset="1" stop-color="#ff3ec8"/>
+              </linearGradient>
+            </defs>
+            <rect x="20" y="28" width="60" height="48" rx="14" stroke="url(#botGrad)" stroke-width="3"/>
+            <circle cx="38" cy="52" r="5" fill="url(#botGrad)"/>
+            <circle cx="62" cy="52" r="5" fill="url(#botGrad)"/>
+            <path d="M38 64 Q50 72 62 64" stroke="url(#botGrad)" stroke-width="3" stroke-linecap="round"/>
+            <line x1="50" y1="28" x2="50" y2="14" stroke="url(#botGrad)" stroke-width="3" stroke-linecap="round"/>
+            <circle cx="50" cy="10" r="4" fill="url(#botGrad)"/>
+          </svg>
+        </div>
+        <div class="status-pill"><span class="status-dot"></span> Actif</div>
+      </div>
+    </header>
 
-      <div class="cmd-group-label">Ambiance</div>
-      <div class="cmd-row"><span class="cmd-name">/play</span><span class="cmd-desc">Joue une musique dans le salon vocal</span></div>
-      <div class="cmd-row"><span class="cmd-name">/8ball</span><span class="cmd-desc">Pose une question à la boule magique</span></div>
-      <div class="cmd-row"><span class="cmd-name">/setwelcome</span><span class="cmd-desc">Définit le salon des messages de bienvenue</span></div>
-    </div>
-  </div>
-</section>
+    <section id="fonctions">
+      <div class="section-head">
+        <span class="section-tag">// Fonctions</span>
+        <h2>Sept modules, une seule invitation.</h2>
+        <p>Chaque module fonctionne indépendamment — active seulement ce dont ton serveur a besoin.</p>
+      </div>
+      <div class="grid">
+        <div class="card">
+          <div class="card-icon">🛡️</div>
+          <h3>Modération</h3>
+          <p>Kick, ban, timeout, avertissements et anti-spam automatique, avec un journal de toutes les actions.</p>
+        </div>
+        <div class="card">
+          <div class="card-icon">📈</div>
+          <h3>Niveaux & XP</h3>
+          <p>Les membres gagnent de l'expérience en discutant, avec un classement pour récompenser les plus actifs.</p>
+        </div>
+        <div class="card">
+          <div class="card-icon">🎫</div>
+          <h3>Tickets</h3>
+          <p>Un panneau avec un bouton pour ouvrir des salons de support privés, fermés en un clic.</p>
+        </div>
+        <div class="card">
+          <div class="card-icon">🎵</div>
+          <h3>Musique</h3>
+          <p>Joue des musiques depuis YouTube directement dans un salon vocal, avec file d'attente.</p>
+        </div>
+        <div class="card">
+          <div class="card-icon">📊</div>
+          <h3>Sondages</h3>
+          <p>Sondages simples ou à choix multiples, avec réactions automatiques jusqu'à 10 options.</p>
+        </div>
+        <div class="card">
+          <div class="card-icon">👋</div>
+          <h3>Bienvenue</h3>
+          <p>Un message personnalisé à chaque arrivée et départ, dans le salon de ton choix.</p>
+        </div>
+      </div>
+    </section>
 
-<section id="rejoindre">
-  <div class="cta">
-    <h2>Prêt à équiper ton serveur ?</h2>
-    <p>L'invitation prend dix secondes. Aucune carte bancaire, aucun abonnement — colosobotmodo reste gratuit.</p>
-    <a href="#" class="btn btn-primary" id="invite-cta">+ Ajouter à mon serveur</a>
-  </div>
-</section>
+    <section id="commandes">
+      <div class="section-head">
+        <span class="section-tag">// Commandes</span>
+        <h2>Toutes les commandes, en un coup d'œil.</h2>
+        <p>Tapez simplement <code class="mono">/</code> dans n'importe quel salon pour les voir apparaître.</p>
+      </div>
 
-<footer>
-  <div>© 2026 colosobotmodo — projet personnel, non affilié à Discord Inc.</div>
-  <div class="mono">Propulsé par discord.py</div>
-</footer>
+      <div class="terminal">
+        <div class="terminal-bar">
+          <span class="terminal-dot" style="background:#ff5f57"></span>
+          <span class="terminal-dot" style="background:#febc2e"></span>
+          <span class="terminal-dot" style="background:#28c840"></span>
+          <div class="terminal-tabs">
+            <span class="active">#général</span>
+            <span>discord.gg/ton-serveur</span>
+          </div>
+        </div>
+        <div class="terminal-body">
+          <div class="cmd-group-label">Modération</div>
+          <div class="cmd-row"><span class="cmd-name">/kick</span><span class="cmd-desc">Expulse un membre du serveur</span></div>
+          <div class="cmd-row"><span class="cmd-name">/ban</span><span class="cmd-desc">Bannit un membre, avec /unban pour revenir en arrière</span></div>
+          <div class="cmd-row"><span class="cmd-name">/timeout</span><span class="cmd-desc">Mute un membre pendant une durée définie</span></div>
+          <div class="cmd-row"><span class="cmd-name">/warn</span><span class="cmd-desc">Avertit un membre et garde un historique</span></div>
+          <div class="cmd-row"><span class="cmd-name">/clear</span><span class="cmd-desc">Supprime plusieurs messages d'un coup</span></div>
+
+          <div class="cmd-group-label">Communauté</div>
+          <div class="cmd-row"><span class="cmd-name">/level</span><span class="cmd-desc">Affiche ton niveau et ton expérience</span></div>
+          <div class="cmd-row"><span class="cmd-name">/leaderboard</span><span class="cmd-desc">Classement des membres les plus actifs</span></div>
+          <div class="cmd-row"><span class="cmd-name">/ticketpanel</span><span class="cmd-desc">Envoie le panneau d'ouverture de tickets</span></div>
+          <div class="cmd-row"><span class="cmd-name">/poll</span><span class="cmd-desc">Crée un sondage rapide</span></div>
+
+          <div class="cmd-group-label">Ambiance</div>
+          <div class="cmd-row"><span class="cmd-name">/play</span><span class="cmd-desc">Joue une musique dans le salon vocal</span></div>
+          <div class="cmd-row"><span class="cmd-name">/8ball</span><span class="cmd-desc">Pose une question à la boule magique</span></div>
+          <div class="cmd-row"><span class="cmd-name">/setwelcome</span><span class="cmd-desc">Définit le salon des messages de bienvenue</span></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="rejoindre">
+      <div class="cta">
+        <h2>Prêt à équiper ton serveur ?</h2>
+        <p>L'invitation prend dix secondes. Aucune carte bancaire, aucun abonnement — colosobotmodo reste gratuit.</p>
+        <a href="#" class="btn btn-primary" id="invite-cta">+ Ajouter à mon serveur</a>
+      </div>
+    </section>
+
+    <footer>
+      <div>© 2026 colosobotmodo — projet personnel, non affilié à Discord Inc.</div>
+      <div class="mono">Propulsé par discord.py</div>
+    </footer>
+  </main>
+</div>
 
 <script>
-  // Remplace INVITE_URL par le lien généré dans le Discord Developer Portal (OAuth2 > URL Generator)
   const INVITE_URL = "https://discord.com/oauth2/authorize?client_id=1533001404539736154&permissions=1101662333014&integration_type=0&scope=bot+applications.commands";
-  document.querySelectorAll('#invite-nav, #invite-hero, #invite-cta').forEach(el => {
+  document.querySelectorAll('#invite-side, #invite-hero, #invite-cta').forEach(el => {
     el.setAttribute('href', INVITE_URL);
     el.setAttribute('target', '_blank');
     el.setAttribute('rel', 'noopener');
   });
+
+  const sidebar = document.getElementById('sidebar');
+  const scrim = document.getElementById('scrim');
+  const menuBtn = document.getElementById('menu-btn');
+
+  function openMenu() { sidebar.classList.add('open'); scrim.classList.add('show'); }
+  function closeMenu() { sidebar.classList.remove('open'); scrim.classList.remove('show'); }
+
+  menuBtn?.addEventListener('click', () => {
+    sidebar.classList.contains('open') ? closeMenu() : openMenu();
+  });
+  scrim?.addEventListener('click', closeMenu);
+  document.querySelectorAll('.side-link').forEach(l => l.addEventListener('click', closeMenu));
 </script>
 
 </body>
