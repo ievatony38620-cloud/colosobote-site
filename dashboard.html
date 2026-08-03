@@ -222,12 +222,12 @@
 <main>
 
   <div id="gate">
-    <h1>Tableau de bord <span class="glow-text">privé</span></h1>
-    <p>Entre le mot de passe de ton bot pour modifier les messages en direct.</p>
-    <div class="gate-form">
-      <input type="password" id="password-input" placeholder="Mot de passe">
-      <button class="btn btn-primary" id="unlock-btn">Déverrouiller</button>
-    </div>
+    <h1>Tableau de bord <span class="glow-text">du bot</span></h1>
+    <p>Connecte-toi avec Discord pour modifier les messages des serveurs où tu es administrateur.</p>
+    <a class="btn btn-primary" id="login-btn" href="#">
+      <svg class="icon" viewBox="0 0 24 24" fill="currentColor"><path d="M20.317 4.369a19.79 19.79 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.058a.082.082 0 0 0 .031.056 19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028c.462-.63.874-1.295 1.226-1.994a.076.076 0 0 0-.041-.106 13.1 13.1 0 0 1-1.872-.892.077.077 0 0 1-.008-.128c.126-.094.252-.192.372-.291a.074.074 0 0 1 .078-.01c3.927 1.793 8.18 1.793 12.061 0a.074.074 0 0 1 .079.009c.12.099.246.198.373.292a.077.077 0 0 1-.006.127c-.598.35-1.22.645-1.873.893a.076.076 0 0 0-.04.106c.36.698.772 1.362 1.225 1.993a.077.077 0 0 0 .084.029 19.84 19.84 0 0 0 6.002-3.03.077.077 0 0 0 .032-.055c.5-5.177-.838-9.674-3.549-13.66a.06.06 0 0 0-.031-.028Z"/></svg>
+      Se connecter avec Discord
+    </a>
     <div id="error-msg"></div>
   </div>
 
@@ -235,6 +235,7 @@
     <div class="dash-head">
       <h1>Messages du <span class="glow-text">bot</span></h1>
       <p>Modifie les textes ci-dessous, puis clique sur "Enregistrer" en bas de page. Les changements s'appliquent immédiatement sur ton serveur.</p>
+      <p style="margin-top:10px;font-size:0.85rem;">Connecté en tant que <strong id="whoami"></strong> · <a href="#" id="logout-link" class="back-link">se déconnecter</a></p>
     </div>
 
     <div class="field-group">
@@ -307,7 +308,7 @@
 </main>
 
 <script>
-  // Remplace par l'URL publique de ton API (Railway → Settings → Networking → Generate Domain)
+  // URL publique de l'API (Railway → Settings → Networking → Generate Domain)
   const API_BASE_URL = "https://colosobotemodo-production.up.railway.app";
 
   const fields = [
@@ -316,7 +317,7 @@
     "poll_footer",
   ];
 
-  let apiKey = "";
+  let sessionToken = "";
   let currentGuildId = "";
 
   const gate = document.getElementById("gate");
@@ -324,18 +325,25 @@
   const errorMsg = document.getElementById("error-msg");
   const statusMsg = document.getElementById("status-msg");
   const guildSelect = document.getElementById("guild-select");
+  const loginBtn = document.getElementById("login-btn");
+  const whoami = document.getElementById("whoami");
+  const logoutLink = document.getElementById("logout-link");
 
-  async function fetchGuilds() {
-    const res = await fetch(`${API_BASE_URL}/api/guilds`, {
-      headers: { "X-API-Key": apiKey },
-    });
+  loginBtn.href = `${API_BASE_URL}/api/auth/login`;
+
+  function authHeaders(extra = {}) {
+    return { Authorization: `Bearer ${sessionToken}`, ...extra };
+  }
+
+  async function fetchMe() {
+    const res = await fetch(`${API_BASE_URL}/api/me`, { headers: authHeaders() });
     if (!res.ok) throw new Error("unauthorized");
     return res.json();
   }
 
   async function fetchConfig(guildId) {
     const res = await fetch(`${API_BASE_URL}/api/config?guild_id=${guildId}`, {
-      headers: { "X-API-Key": apiKey },
+      headers: authHeaders(),
     });
     if (!res.ok) throw new Error("fetch failed");
     return res.json();
@@ -344,7 +352,7 @@
   async function saveConfig(guildId, data) {
     const res = await fetch(`${API_BASE_URL}/api/config?guild_id=${guildId}`, {
       method: "POST",
-      headers: { "Content-Type": "application/json", "X-API-Key": apiKey },
+      headers: authHeaders({ "Content-Type": "application/json" }),
       body: JSON.stringify(data),
     });
     if (!res.ok) throw new Error("save failed");
@@ -383,28 +391,54 @@
     fillForm(config);
   }
 
-  document.getElementById("unlock-btn").addEventListener("click", async () => {
-    apiKey = document.getElementById("password-input").value.trim();
-    if (!apiKey) return;
-    errorMsg.textContent = "";
+  async function enterDashboard(me) {
+    if (!me.guilds || me.guilds.length === 0) {
+      errorMsg.textContent = "Tu n'es administrateur sur aucun serveur où le bot est présent.";
+      return;
+    }
+    whoami.textContent = me.username;
+    fillGuildSelect(me.guilds);
+    await loadCurrentGuildConfig();
+    gate.style.display = "none";
+    dashboard.style.display = "block";
+  }
+
+  async function init() {
+    // Le token arrive dans l'URL juste après la connexion Discord (#token=...)
+    const hashMatch = window.location.hash.match(/token=([^&]+)/);
+    if (hashMatch) {
+      sessionToken = decodeURIComponent(hashMatch[1]);
+      sessionStorage.setItem("colosobot_token", sessionToken);
+      history.replaceState(null, "", window.location.pathname);
+    } else {
+      sessionToken = sessionStorage.getItem("colosobot_token") || "";
+    }
+
+    if (!sessionToken) return; // reste sur l'écran de connexion
+
     try {
-      const guilds = await fetchGuilds();
-      if (guilds.length === 0) {
-        errorMsg.textContent = "Le bot n'est présent sur aucun serveur.";
+      const me = await fetchMe();
+      if (!me.logged_in) {
+        sessionStorage.removeItem("colosobot_token");
         return;
       }
-      fillGuildSelect(guilds);
-      await loadCurrentGuildConfig();
-      gate.style.display = "none";
-      dashboard.style.display = "block";
+      await enterDashboard(me);
     } catch (e) {
-      errorMsg.textContent = "Mot de passe incorrect, ou le bot est hors ligne.";
+      errorMsg.textContent = "Session expirée, reconnecte-toi.";
+      sessionStorage.removeItem("colosobot_token");
     }
+  }
+
+  logoutLink.addEventListener("click", async (e) => {
+    e.preventDefault();
+    try {
+      await fetch(`${API_BASE_URL}/api/auth/logout`, { method: "POST", headers: authHeaders() });
+    } catch (e) {}
+    sessionStorage.removeItem("colosobot_token");
+    window.location.reload();
   });
 
-  document.getElementById("password-input").addEventListener("keydown", (e) => {
-    if (e.key === "Enter") document.getElementById("unlock-btn").click();
-  });
+  init();
 
   guildSelect.addEventListener("change", async () => {
     statusMsg.textContent = "Chargement du serveur...";
