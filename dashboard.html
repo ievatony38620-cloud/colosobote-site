@@ -270,6 +270,7 @@
         <button class="side-link" data-cat="boutique"><span class="dot"></span> 🛒 Boutique</button>
         <button class="side-link" data-cat="tickets"><span class="dot"></span> 🎫 Tickets</button>
         <button class="side-link" data-cat="sondages"><span class="dot"></span> 📊 Sondages</button>
+        <button class="side-link" data-cat="social"><span class="dot"></span> 📡 Notifications sociales</button>
       </div>
 
       <div class="sidebar-foot">
@@ -399,6 +400,59 @@
         </div>
       </div>
 
+      <div class="category" data-cat="social">
+        <div class="field-group">
+          <h3 style="margin-bottom:6px;font-size:1rem;">🔴 Twitch</h3>
+          <div class="hint">Annonce automatique quand tu passes en live.</div>
+          <div class="field">
+            <label for="twitch_username">Nom d'utilisateur Twitch</label>
+            <input type="text" id="twitch_username" placeholder="ex: coloso2021">
+          </div>
+          <div class="field">
+            <label for="twitch_channel_id">ID du salon Discord pour l'annonce de live</label>
+            <div class="hint">Clic droit sur le salon → Copier l'identifiant (mode développeur activé sur Discord)</div>
+            <input type="text" id="twitch_channel_id" placeholder="ex: 123456789012345678">
+          </div>
+          <div class="field">
+            <label for="twitch_live_message">Message de live</label>
+            <div class="hint">Utilise <code>{streamer}</code>, <code>{title}</code>, <code>{url}</code></div>
+            <textarea id="twitch_live_message"></textarea>
+          </div>
+        </div>
+
+        <div class="field-group">
+          <h3 style="margin-bottom:6px;font-size:1rem;">📺 YouTube</h3>
+          <div class="hint">Annonce automatique à chaque nouvelle vidéo (vérification toutes les 10 min).</div>
+          <div class="field">
+            <label for="youtube_channel_id">ID de la chaîne YouTube</label>
+            <div class="hint">Sur ta chaîne YouTube : Personnaliser la chaîne → Paramètres avancés, ou dans l'URL si elle commence par /channel/</div>
+            <input type="text" id="youtube_channel_id" placeholder="ex: UCxxxxxxxxxxxxxxxxxxxxxx">
+          </div>
+          <div class="field">
+            <label for="youtube_post_message">Message de nouvelle vidéo</label>
+            <div class="hint">Utilise <code>{channel}</code>, <code>{title}</code>, <code>{url}</code></div>
+            <textarea id="youtube_post_message"></textarea>
+          </div>
+        </div>
+
+        <div class="field-group">
+          <h3 style="margin-bottom:6px;font-size:1rem;">🎵📸 TikTok & Instagram</h3>
+          <div class="hint">Discord ne permet pas de détection automatique fiable et gratuite pour ces plateformes. Utilise la commande <code>/annonce</code> sur Discord après chaque post pour publier une annonce stylée manuellement (5 secondes).</div>
+          <div class="field">
+            <label for="tiktok_username">Nom d'utilisateur TikTok (affiché dans l'annonce)</label>
+            <input type="text" id="tiktok_username" placeholder="ex: @coloso2021">
+          </div>
+          <div class="field">
+            <label for="instagram_username">Nom d'utilisateur Instagram (affiché dans l'annonce)</label>
+            <input type="text" id="instagram_username" placeholder="ex: @coloso2021">
+          </div>
+          <div class="field">
+            <label for="social_channel_id">ID du salon Discord pour YouTube / TikTok / Instagram</label>
+            <input type="text" id="social_channel_id" placeholder="ex: 123456789012345678">
+          </div>
+        </div>
+      </div>
+
       <div class="save-bar">
         <span id="status-msg"></span>
         <div style="display:flex; gap:10px;">
@@ -420,6 +474,9 @@
     "poll_footer",
     "xp_min", "xp_max", "xp_cooldown",
     "currency_name", "daily_min", "daily_max", "daily_cooldown_hours", "weekly_announce_channel_id",
+    "twitch_username", "twitch_channel_id", "twitch_live_message",
+    "youtube_channel_id", "youtube_post_message",
+    "tiktok_username", "instagram_username", "social_channel_id",
   ];
 
   const catTitles = {
@@ -430,6 +487,7 @@
     boutique: "🛒 Boutique",
     tickets: "🎫 Tickets",
     sondages: "📊 Sondages",
+    social: "📡 Notifications sociales",
   };
 
   let sessionToken = "";
