@@ -494,6 +494,7 @@
     if (!res.ok) throw new Error("save failed");
     return res.json();
   }
+  async function fetchConfig(guildId) {
     const res = await fetch(`${API_BASE_URL}/api/config?guild_id=${guildId}`, { headers: authHeaders() });
     if (!res.ok) throw new Error("fetch failed");
     return res.json();
@@ -606,6 +607,7 @@
     shopItems.push({ name: "", price: 0, role_id: "", description: "" });
     renderShopRows();
   });
+  function fillGuildSelect(guilds) {
     guildSelect.innerHTML = "";
     guilds.forEach((g) => {
       const opt = document.createElement("option");
