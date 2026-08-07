@@ -124,16 +124,19 @@
 
   .guild-select-wrap { margin-bottom: 26px; }
 
-  .guild-rail {
+  .server-rail {
+    width: 72px;
+    flex-shrink: 0;
+    background: #05040a;
+    border-right: 1px solid var(--line);
     display: flex;
     flex-direction: column;
+    align-items: center;
     gap: 10px;
-    max-height: 260px;
+    padding: 18px 0;
     overflow-y: auto;
-    padding: 4px 2px;
   }
-  .guild-rail::-webkit-scrollbar { width: 4px; }
-  .guild-rail::-webkit-scrollbar-thumb { background: var(--line); border-radius: 4px; }
+  .server-rail::-webkit-scrollbar { width: 0; }
 
   .guild-icon-btn {
     position: relative;
@@ -154,7 +157,7 @@
   }
   .guild-icon-btn::before {
     content: "";
-    position: absolute; left: -12px; top: 50%; transform: translateY(-50%);
+    position: absolute; left: -18px; top: 50%; transform: translateY(-50%);
     width: 4px; height: 8px;
     border-radius: 4px;
     background: var(--text);
@@ -263,9 +266,18 @@
 
   @media (max-width: 780px) {
     .shell { flex-direction: column; }
+    .server-rail {
+      width: 100%;
+      flex-direction: row;
+      flex-wrap: wrap;
+      padding: 12px 5vw;
+      border-right: none;
+      border-bottom: 1px solid var(--line);
+    }
+    .guild-icon-btn::before { left: 50%; top: -14px; transform: translateX(-50%); width: 8px; height: 4px; }
+    .guild-icon-btn.active::before { height: 4px; width: 24px; }
     .sidebar { width: 100%; flex-direction: row; flex-wrap: wrap; align-items: center; padding: 16px 5vw; }
     .brand-row { margin-bottom: 0; margin-right: auto; }
-    .guild-select-wrap { width: 100%; order: 3; margin: 14px 0 0; }
     .side-nav { flex-direction: row; margin-bottom: 0; order: 4; width: 100%; flex-wrap: wrap; }
     .side-label { display: none; }
     .sidebar-foot { margin-top: 0; margin-left: auto; border: none; padding: 0; order: 2; }
@@ -294,17 +306,15 @@
 
 <div id="dashboard">
   <div class="shell">
+    <aside class="server-rail" id="server-rail"></aside>
+
     <aside class="sidebar">
       <div class="brand-row">
         <div class="brand-mark hex"></div>
         colosobotmodo
       </div>
 
-      <div class="guild-select-wrap">
-        <div class="side-label">Serveur ciblé</div>
-        <div id="guild-rail" class="guild-rail"></div>
-        <select id="guild-select" style="display:none;"></select>
-      </div>
+      <select id="guild-select" style="display:none;"></select>
 
       <div class="side-nav" id="category-nav">
         <button class="side-link current" data-cat="bienvenue"><span class="dot"></span> 👋 Bienvenue</button>
@@ -709,7 +719,7 @@
     shopItems.push({ name: "", price: 0, role_id: "", description: "" });
     renderShopRows();
   });
-  const guildRailEl = document.getElementById("guild-rail");
+  const guildRailEl = document.getElementById("server-rail");
 
   function initials(name) {
     return name.trim().split(/\s+/).slice(0, 2).map(w => w[0]).join("").toUpperCase();
