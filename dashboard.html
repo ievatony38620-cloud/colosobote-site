@@ -260,6 +260,17 @@
   .dyn-row .remove-btn:hover { background: rgba(255,90,122,0.2); }
   .dyn-empty { color: var(--text-dimmer); font-size: 0.86rem; padding: 6px 0; }
 
+  .perm-rows { display: flex; flex-direction: column; gap: 8px; margin-top: 10px; }
+  .perm-row {
+    display: flex; align-items: center; gap: 10px;
+    background: var(--panel-2);
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    padding: 10px 14px;
+  }
+  .perm-row input[type="checkbox"] { width: 18px; height: 18px; accent-color: var(--magenta); flex-shrink: 0; }
+  .perm-row label { margin: 0; color: var(--text); font-weight: 600; font-size: 0.92rem; cursor: pointer; }
+
   @media (max-width: 640px) {
     .dyn-row, .dyn-row.shop-row { grid-template-columns: 1fr; }
   }
@@ -325,6 +336,7 @@
         <button class="side-link" data-cat="tickets"><span class="dot"></span> 🎫 Tickets</button>
         <button class="side-link" data-cat="sondages"><span class="dot"></span> 📊 Sondages</button>
         <button class="side-link" data-cat="social"><span class="dot"></span> 📡 Notifications sociales</button>
+        <button class="side-link" data-cat="permissions"><span class="dot"></span> 🔒 Permissions</button>
       </div>
 
       <div class="sidebar-foot">
@@ -507,6 +519,24 @@
         </div>
       </div>
 
+      <div class="category" data-cat="permissions">
+        <div class="field-group">
+          <h3 style="margin-bottom:6px;font-size:1rem;">🛡️ Modération</h3>
+          <div class="hint">Coche les rôles qui n'ont PAS le droit d'utiliser /kick, /ban, /timeout, /warn, /clear, etc.</div>
+          <div id="perm-rows-moderation" class="perm-rows"></div>
+        </div>
+        <div class="field-group">
+          <h3 style="margin-bottom:6px;font-size:1rem;">📊 Sondages</h3>
+          <div class="hint">Coche les rôles qui n'ont PAS le droit d'utiliser /poll et /pollmulti.</div>
+          <div id="perm-rows-polls" class="perm-rows"></div>
+        </div>
+        <div class="field-group">
+          <h3 style="margin-bottom:6px;font-size:1rem;">⚙️ Autre</h3>
+          <div class="hint">Coche les rôles qui n'ont PAS le droit d'utiliser /setup, /rolepanel, /ticketpanel.</div>
+          <div id="perm-rows-other" class="perm-rows"></div>
+        </div>
+      </div>
+
       <div class="save-bar">
         <span id="status-msg"></span>
         <div style="display:flex; gap:10px;">
@@ -542,7 +572,10 @@
     tickets: "🎫 Tickets",
     sondages: "📊 Sondages",
     social: "📡 Notifications sociales",
+    permissions: "🔒 Permissions",
   };
+
+  const PERM_CATEGORIES = ["moderation", "polls", "other"];
 
   let sessionToken = "";
   let currentGuildId = "";
@@ -606,6 +639,22 @@
     if (!res.ok) throw new Error("save failed");
     return res.json();
   }
+  async function fetchPermissions(guildId) {
+    const res = await fetch(`${API_BASE_URL}/api/permissions?guild_id=${guildId}`, { headers: authHeaders() });
+    if (!res.ok) throw new Error("fetch failed");
+    return res.json();
+  }
+
+  async function savePermissions(guildId, category, roleIds) {
+    const res = await fetch(`${API_BASE_URL}/api/permissions?guild_id=${guildId}&category=${category}`, {
+      method: "POST",
+      headers: authHeaders({ "Content-Type": "application/json" }),
+      body: JSON.stringify(roleIds),
+    });
+    if (!res.ok) throw new Error("save failed");
+    return res.json();
+  }
+
   async function fetchConfig(guildId) {
     const res = await fetch(`${API_BASE_URL}/api/config?guild_id=${guildId}`, { headers: authHeaders() });
     if (!res.ok) throw new Error("fetch failed");
@@ -710,6 +759,35 @@
     });
   }
 
+  let permissionsData = { moderation: [], polls: [], other: [] };
+
+  function renderPermRows() {
+    PERM_CATEGORIES.forEach((cat) => {
+      const el = document.getElementById(`perm-rows-${cat}`);
+      if (!el) return;
+      if (guildRoles.length === 0) {
+        el.innerHTML = `<div class="dyn-empty">Aucun rôle trouvé.</div>`;
+        return;
+      }
+      const blocked = permissionsData[cat] || [];
+      el.innerHTML = guildRoles.map((r) => `
+        <div class="perm-row">
+          <input type="checkbox" id="perm-${cat}-${r.id}" data-cat="${cat}" data-role="${r.id}" ${blocked.includes(r.id) ? "checked" : ""}>
+          <label for="perm-${cat}-${r.id}">${r.name}</label>
+        </div>
+      `).join("");
+      el.querySelectorAll("input[type=checkbox]").forEach((cb) => {
+        cb.addEventListener("change", (e) => {
+          const category = e.target.dataset.cat;
+          const roleId = e.target.dataset.role;
+          const set = new Set(permissionsData[category] || []);
+          if (e.target.checked) set.add(roleId); else set.delete(roleId);
+          permissionsData[category] = Array.from(set);
+        });
+      });
+    });
+  }
+
   document.getElementById("mult-add-btn").addEventListener("click", () => {
     multiplierItems.push({ role_id: guildRoles[0]?.id || "", role_name: guildRoles[0]?.name || "", xp_mult: 1, coins_mult: 1 });
     renderMultRows();
@@ -758,18 +836,21 @@
 
   async function loadCurrentGuildConfig() {
     currentGuildId = guildSelect.value;
-    const [config, roles, mults, items] = await Promise.all([
+    const [config, roles, mults, items, perms] = await Promise.all([
       fetchConfig(currentGuildId),
       fetchRoles(currentGuildId),
       fetchMultipliers(currentGuildId),
       fetchShop(currentGuildId),
+      fetchPermissions(currentGuildId),
     ]);
     fillForm(config);
     guildRoles = roles;
     multiplierItems = mults;
     shopItems = items;
+    permissionsData = perms;
     renderMultRows();
     renderShopRows();
+    renderPermRows();
   }
 
   function switchCategory(cat) {
@@ -863,6 +944,7 @@
         saveConfig(currentGuildId, readForm()),
         saveMultipliers(currentGuildId, multiplierItems),
         saveShop(currentGuildId, shopItems),
+        ...PERM_CATEGORIES.map((cat) => savePermissions(currentGuildId, cat, permissionsData[cat] || [])),
       ]);
       statusMsg.textContent = "✅ Messages enregistrés et actifs sur le serveur.";
       statusMsg.className = "success";
