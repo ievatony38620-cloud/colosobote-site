@@ -656,6 +656,16 @@
     return res.json();
   }
 
+  async function saveAllPermissions(guildId, mapping) {
+    const res = await fetch(`${API_BASE_URL}/api/permissions?guild_id=${guildId}`, {
+      method: "POST",
+      headers: authHeaders({ "Content-Type": "application/json" }),
+      body: JSON.stringify(mapping),
+    });
+    if (!res.ok) throw new Error("save failed");
+    return res.json();
+  }
+
   async function fetchConfig(guildId) {
     const res = await fetch(`${API_BASE_URL}/api/config?guild_id=${guildId}`, { headers: authHeaders() });
     if (!res.ok) throw new Error("fetch failed");
@@ -955,7 +965,7 @@
         saveConfig(currentGuildId, readForm()),
         saveMultipliers(currentGuildId, multiplierItems),
         saveShop(currentGuildId, shopItems),
-        ...ALL_COMMANDS.map((cmd) => savePermissions(currentGuildId, cmd, permissionsData[cmd] || [])),
+        saveAllPermissions(currentGuildId, permissionsData),
       ]);
       statusMsg.textContent = "✅ Messages enregistrés et actifs sur le serveur.";
       statusMsg.className = "success";
