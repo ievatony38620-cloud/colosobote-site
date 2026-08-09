@@ -260,16 +260,20 @@
   .dyn-row .remove-btn:hover { background: rgba(255,90,122,0.2); }
   .dyn-empty { color: var(--text-dimmer); font-size: 0.86rem; padding: 6px 0; }
 
-  .perm-rows { display: flex; flex-direction: column; gap: 8px; margin-top: 10px; }
-  .perm-row {
-    display: flex; align-items: center; gap: 10px;
+  .perm-rows { margin-top: 10px; }
+  .perm-select {
+    width: 100%;
     background: var(--panel-2);
     border: 1px solid var(--line);
     border-radius: 8px;
-    padding: 10px 14px;
+    padding: 8px 10px;
+    color: var(--text);
+    font-family: inherit;
+    font-size: 0.88rem;
+    min-height: 84px;
   }
-  .perm-row input[type="checkbox"] { width: 18px; height: 18px; accent-color: var(--magenta); flex-shrink: 0; }
-  .perm-row label { margin: 0; color: var(--text); font-weight: 600; font-size: 0.92rem; cursor: pointer; }
+  .perm-select option { padding: 4px 6px; }
+  .perm-select:focus { outline: none; border-color: var(--magenta); }
 
   @media (max-width: 640px) {
     .dyn-row, .dyn-row.shop-row { grid-template-columns: 1fr; }
@@ -773,30 +777,24 @@
         ${commands.map((cmd) => `
           <div style="margin-bottom:14px;">
             <div style="font-weight:600;font-size:0.88rem;color:var(--text-dim);margin-bottom:6px;">/${cmd}</div>
-            <div class="perm-rows" id="perm-rows-${cmd}"></div>
+            <div class="perm-rows"><select multiple class="perm-select" id="perm-select-${cmd}" data-cmd="${cmd}"></select></div>
+            <div class="hint" style="margin-top:4px;">Ctrl/Cmd + clic pour sélectionner plusieurs rôles à bloquer.</div>
           </div>
         `).join("")}
       </div>
     `).join("");
 
     ALL_COMMANDS.forEach((cmd) => {
-      const el = document.getElementById(`perm-rows-${cmd}`);
+      const el = document.getElementById(`perm-select-${cmd}`);
       if (!el) return;
       const blocked = permissionsData[cmd] || [];
       el.innerHTML = guildRoles.map((r) => `
-        <div class="perm-row">
-          <input type="checkbox" id="perm-${cmd}-${r.id}" data-cmd="${cmd}" data-role="${r.id}" ${blocked.includes(r.id) ? "checked" : ""}>
-          <label for="perm-${cmd}-${r.id}">${r.name}</label>
-        </div>
+        <option value="${r.id}" ${blocked.includes(r.id) ? "selected" : ""}>${r.name}</option>
       `).join("");
-      el.querySelectorAll("input[type=checkbox]").forEach((cb) => {
-        cb.addEventListener("change", (e) => {
-          const commandName = e.target.dataset.cmd;
-          const roleId = e.target.dataset.role;
-          const set = new Set(permissionsData[commandName] || []);
-          if (e.target.checked) set.add(roleId); else set.delete(roleId);
-          permissionsData[commandName] = Array.from(set);
-        });
+      el.addEventListener("change", (e) => {
+        const commandName = e.target.dataset.cmd;
+        const selected = Array.from(e.target.selectedOptions).map((opt) => opt.value);
+        permissionsData[commandName] = selected;
       });
     });
   }
