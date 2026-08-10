@@ -573,7 +573,7 @@
       </div>
 
       <div class="category" data-cat="permissions">
-        <div class="hint" style="margin-bottom:14px;">Pour chaque commande, coche les rôles qui n'ont PAS le droit de l'utiliser.</div>
+        <div class="hint" style="margin-bottom:14px;">Pour chaque commande, choisis les rôles qui ONT le droit de l'utiliser. Si tu ne sélectionnes aucun rôle, la commande reste ouverte à tout le monde.</div>
         <div id="perm-groups"></div>
       </div>
 
@@ -882,7 +882,7 @@
             <span class="dot" style="background:${r.color}"></span>${r.name}
           </div>
         `).join("")
-      : `<div class="perm-add-empty">Tous les rôles sont déjà bloqués.</div>`;
+      : `<div class="perm-add-empty">Tous les rôles sont déjà autorisés.</div>`;
 
     el.innerHTML = `
       ${pills}
