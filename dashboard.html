@@ -260,20 +260,69 @@
   .dyn-row .remove-btn:hover { background: rgba(255,90,122,0.2); }
   .dyn-empty { color: var(--text-dimmer); font-size: 0.86rem; padding: 6px 0; }
 
-  .perm-rows { margin-top: 10px; }
-  .perm-select {
-    width: 100%;
+  .perm-rows { margin-top: 10px; display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+
+  .role-pill {
+    display: inline-flex; align-items: center; gap: 8px;
     background: var(--panel-2);
     border: 1px solid var(--line);
-    border-radius: 8px;
-    padding: 8px 10px;
+    border-radius: 999px;
+    padding: 6px 8px 6px 12px;
+    font-size: 0.86rem;
+    font-weight: 600;
     color: var(--text);
-    font-family: inherit;
-    font-size: 0.88rem;
-    min-height: 84px;
   }
-  .perm-select option { padding: 4px 6px; }
-  .perm-select:focus { outline: none; border-color: var(--magenta); }
+  .role-pill .dot {
+    width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0;
+  }
+  .role-pill .remove-x {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 18px; height: 18px; border-radius: 50%;
+    background: rgba(255,255,255,0.08);
+    color: var(--text-dimmer);
+    cursor: pointer;
+    font-size: 0.75rem;
+    line-height: 1;
+    border: none;
+  }
+  .role-pill .remove-x:hover { background: rgba(255,80,80,0.25); color: #ff8080; }
+
+  .perm-add-wrap { position: relative; }
+  .perm-add-btn {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 28px; height: 28px; border-radius: 50%;
+    background: var(--panel-2);
+    border: 1px solid var(--line);
+    color: var(--text-dim);
+    cursor: pointer;
+    font-size: 1rem;
+    line-height: 1;
+  }
+  .perm-add-btn:hover { border-color: var(--magenta); color: var(--magenta); }
+  .perm-add-menu {
+    position: absolute; top: 34px; left: 0; z-index: 20;
+    background: var(--panel-2);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 6px;
+    min-width: 160px;
+    max-height: 220px;
+    overflow-y: auto;
+    display: none;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+  }
+  .perm-add-menu.open { display: block; }
+  .perm-add-item {
+    display: flex; align-items: center; gap: 8px;
+    padding: 7px 10px;
+    border-radius: 6px;
+    font-size: 0.85rem;
+    color: var(--text);
+    cursor: pointer;
+  }
+  .perm-add-item:hover { background: rgba(255,255,255,0.06); }
+  .perm-add-item .dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+  .perm-add-empty { padding: 8px 10px; color: var(--text-dimmer); font-size: 0.82rem; }
 
   @media (max-width: 640px) {
     .dyn-row, .dyn-row.shop-row { grid-template-columns: 1fr; }
@@ -575,6 +624,7 @@
     "🎉 Fun": ["8ball", "joke", "coinflip", "dice", "avatar"],
     "📡 Réseaux sociaux": ["annonce", "test-notif"],
     "⚙️ Serveur": ["setup", "rolepanel", "ticketpanel", "setwelcome", "voc-set", "voc-stop"],
+    "🔒 Permissions": ["permissions-liste"],
   };
   const ALL_COMMANDS = Object.values(COMMAND_GROUPS).flat();
 
@@ -785,26 +835,90 @@
       <div class="field-group">
         <h3 style="margin-bottom:10px;font-size:1rem;">${groupLabel}</h3>
         ${commands.map((cmd) => `
-          <div style="margin-bottom:14px;">
+          <div style="margin-bottom:16px;">
             <div style="font-weight:600;font-size:0.88rem;color:var(--text-dim);margin-bottom:6px;">/${cmd}</div>
-            <div class="perm-rows"><select multiple class="perm-select" id="perm-select-${cmd}" data-cmd="${cmd}"></select></div>
-            <div class="hint" style="margin-top:4px;">Ctrl/Cmd + clic pour sélectionner plusieurs rôles à bloquer.</div>
+            <div class="perm-rows" id="perm-rows-${cmd}" data-cmd="${cmd}"></div>
           </div>
         `).join("")}
       </div>
     `).join("");
 
-    ALL_COMMANDS.forEach((cmd) => {
-      const el = document.getElementById(`perm-select-${cmd}`);
-      if (!el) return;
-      const blocked = permissionsData[cmd] || [];
-      el.innerHTML = guildRoles.map((r) => `
-        <option value="${r.id}" ${blocked.includes(r.id) ? "selected" : ""}>${r.name}</option>
-      `).join("");
-      el.addEventListener("change", (e) => {
-        const commandName = e.target.dataset.cmd;
-        const selected = Array.from(e.target.selectedOptions).map((opt) => opt.value);
-        permissionsData[commandName] = selected;
+    ALL_COMMANDS.forEach((cmd) => renderPermRowForCommand(cmd));
+
+    // Ferme les menus "+" ouverts si on clique ailleurs sur la page
+    document.addEventListener("click", (e) => {
+      if (!e.target.closest(".perm-add-wrap")) {
+        document.querySelectorAll(".perm-add-menu.open").forEach((m) => m.classList.remove("open"));
+      }
+    });
+  }
+
+  function roleById(id) {
+    return guildRoles.find((r) => r.id === id);
+  }
+
+  function renderPermRowForCommand(cmd) {
+    const el = document.getElementById(`perm-rows-${cmd}`);
+    if (!el) return;
+    const blocked = permissionsData[cmd] || [];
+    const available = guildRoles.filter((r) => !blocked.includes(r.id));
+
+    const pills = blocked.map((rid) => {
+      const role = roleById(rid);
+      const name = role ? role.name : "Rôle inconnu";
+      const color = role ? role.color : "#99aab5";
+      return `
+        <span class="role-pill">
+          <span class="dot" style="background:${color}"></span>
+          ${name}
+          <button type="button" class="remove-x" data-cmd="${cmd}" data-role="${rid}" title="Retirer">✕</button>
+        </span>
+      `;
+    }).join("");
+
+    const menuItems = available.length
+      ? available.map((r) => `
+          <div class="perm-add-item" data-cmd="${cmd}" data-role="${r.id}">
+            <span class="dot" style="background:${r.color}"></span>${r.name}
+          </div>
+        `).join("")
+      : `<div class="perm-add-empty">Tous les rôles sont déjà bloqués.</div>`;
+
+    el.innerHTML = `
+      ${pills}
+      <div class="perm-add-wrap">
+        <button type="button" class="perm-add-btn" data-cmd="${cmd}">+</button>
+        <div class="perm-add-menu" id="perm-add-menu-${cmd}">${menuItems}</div>
+      </div>
+    `;
+
+    el.querySelectorAll(".remove-x").forEach((btn) => {
+      btn.addEventListener("click", (e) => {
+        e.stopPropagation();
+        const commandName = btn.dataset.cmd;
+        const roleId = btn.dataset.role;
+        permissionsData[commandName] = (permissionsData[commandName] || []).filter((id) => id !== roleId);
+        renderPermRowForCommand(commandName);
+      });
+    });
+
+    const addBtn = el.querySelector(".perm-add-btn");
+    const menu = el.querySelector(".perm-add-menu");
+    addBtn.addEventListener("click", (e) => {
+      e.stopPropagation();
+      document.querySelectorAll(".perm-add-menu.open").forEach((m) => { if (m !== menu) m.classList.remove("open"); });
+      menu.classList.toggle("open");
+    });
+
+    el.querySelectorAll(".perm-add-item").forEach((item) => {
+      item.addEventListener("click", (e) => {
+        e.stopPropagation();
+        const commandName = item.dataset.cmd;
+        const roleId = item.dataset.role;
+        const set = new Set(permissionsData[commandName] || []);
+        set.add(roleId);
+        permissionsData[commandName] = Array.from(set);
+        renderPermRowForCommand(commandName);
       });
     });
   }
