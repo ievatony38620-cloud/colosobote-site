@@ -238,6 +238,72 @@
 
   .icon { width: 20px; height: 20px; display: inline-block; }
 
+  .module-toggle-row {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 20px;
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    padding: 18px 22px;
+    margin-bottom: 20px;
+  }
+  .module-toggle-row .mt-label { font-weight: 700; font-size: 0.98rem; margin-bottom: 4px; }
+  .module-toggle-row .mt-hint { color: var(--text-dim); font-size: 0.85rem; }
+
+  .switch {
+    position: relative;
+    display: inline-block;
+    width: 46px;
+    height: 26px;
+    flex-shrink: 0;
+  }
+  .switch input { opacity: 0; width: 0; height: 0; }
+  .switch .slider {
+    position: absolute; inset: 0;
+    background: var(--panel-2);
+    border: 1px solid var(--line);
+    border-radius: 100px;
+    cursor: pointer;
+    transition: background 0.2s ease, border-color 0.2s ease;
+  }
+  .switch .slider::before {
+    content: "";
+    position: absolute;
+    height: 18px; width: 18px;
+    left: 3px; top: 50%;
+    transform: translateY(-50%);
+    background: var(--text-dim);
+    border-radius: 50%;
+    transition: transform 0.2s ease, background 0.2s ease;
+  }
+  .switch input:checked + .slider {
+    background: linear-gradient(90deg, var(--blue), var(--violet));
+    border-color: transparent;
+  }
+  .switch input:checked + .slider::before {
+    transform: translate(20px, -50%);
+    background: #060512;
+  }
+  .category.module-off .field-group:not(.module-toggle-row) { opacity: 0.4; pointer-events: none; }
+
+  .mini-toggle-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    padding: 10px 10px;
+    margin-bottom: 10px;
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    font-size: 0.82rem;
+    color: var(--text-dim);
+  }
+  .switch-sm { width: 34px; height: 19px; }
+  .switch-sm .slider::before { height: 13px; width: 13px; }
+  .switch-sm input:checked + .slider::before { transform: translate(15px, -50%); }
+
   .dyn-row {
     display: grid;
     grid-template-columns: 1.4fr 0.7fr 0.7fr auto;
@@ -392,6 +458,14 @@
         <button class="side-link" data-cat="permissions"><span class="dot"></span> 🔒 Permissions</button>
       </div>
 
+      <div class="mini-toggle-row">
+        <span>🎵 Musique & Vocal</span>
+        <label class="switch switch-sm">
+          <input type="checkbox" class="module-toggle" data-key="module_musique" checked>
+          <span class="slider"></span>
+        </label>
+      </div>
+
       <div class="sidebar-foot">
         <div class="who-row">Connecté : <strong id="whoami"></strong></div>
         <a href="#" id="logout-link" class="logout-link">Se déconnecter</a>
@@ -407,6 +481,16 @@
       </div>
 
       <div class="category active" data-cat="bienvenue">
+        <div class="module-toggle-row">
+          <div>
+            <div class="mt-label">Messages de bienvenue et de départ</div>
+            <div class="mt-hint">Désactive complètement ce module sur ce serveur.</div>
+          </div>
+          <label class="switch">
+            <input type="checkbox" class="module-toggle" data-key="module_bienvenue" checked>
+            <span class="slider"></span>
+          </label>
+        </div>
         <div class="field-group">
           <div class="field">
             <label for="welcome_message">Message à l'arrivée d'un membre</label>
@@ -422,6 +506,16 @@
       </div>
 
       <div class="category" data-cat="niveaux">
+        <div class="module-toggle-row">
+          <div>
+            <div class="mt-label">Système de niveaux</div>
+            <div class="mt-hint">Désactive le gain d'XP et les commandes /level, /leaderboard.</div>
+          </div>
+          <label class="switch">
+            <input type="checkbox" class="module-toggle" data-key="module_niveaux" checked>
+            <span class="slider"></span>
+          </label>
+        </div>
         <div class="field-group">
           <div class="field">
             <label for="levelup_message">Message de passage de niveau</label>
@@ -432,6 +526,16 @@
       </div>
 
       <div class="category" data-cat="economie">
+        <div class="module-toggle-row">
+          <div>
+            <div class="mt-label">Économie</div>
+            <div class="mt-hint">Désactive /daily, /balance, /shop, /buy, /richest et le classement hebdomadaire.</div>
+          </div>
+          <label class="switch">
+            <input type="checkbox" class="module-toggle" data-key="module_economie" checked>
+            <span class="slider"></span>
+          </label>
+        </div>
         <div class="field-group">
           <h3 style="margin-bottom:14px;font-size:1rem;">📈 XP par message</h3>
           <div class="field">
@@ -492,6 +596,16 @@
       </div>
 
       <div class="category" data-cat="tickets">
+        <div class="module-toggle-row">
+          <div>
+            <div class="mt-label">Système de tickets</div>
+            <div class="mt-hint">Désactive /ticketpanel et l'ouverture de nouveaux tickets.</div>
+          </div>
+          <label class="switch">
+            <input type="checkbox" class="module-toggle" data-key="module_tickets" checked>
+            <span class="slider"></span>
+          </label>
+        </div>
         <div class="field-group">
           <div class="field">
             <label for="ticket_panel_title">Titre du panneau de tickets</label>
@@ -510,6 +624,16 @@
       </div>
 
       <div class="category" data-cat="sondages">
+        <div class="module-toggle-row">
+          <div>
+            <div class="mt-label">Sondages</div>
+            <div class="mt-hint">Désactive /poll et /pollmulti.</div>
+          </div>
+          <label class="switch">
+            <input type="checkbox" class="module-toggle" data-key="module_sondages" checked>
+            <span class="slider"></span>
+          </label>
+        </div>
         <div class="field-group">
           <div class="field">
             <label for="poll_footer">Pied de page des sondages</label>
@@ -520,6 +644,16 @@
       </div>
 
       <div class="category" data-cat="social">
+        <div class="module-toggle-row">
+          <div>
+            <div class="mt-label">Notifications sociales</div>
+            <div class="mt-hint">Désactive la détection Twitch/YouTube et /annonce, /test-notif.</div>
+          </div>
+          <label class="switch">
+            <input type="checkbox" class="module-toggle" data-key="module_social" checked>
+            <span class="slider"></span>
+          </label>
+        </div>
         <div class="field-group">
           <h3 style="margin-bottom:6px;font-size:1rem;">🔴 Twitch</h3>
           <div class="hint">Annonce automatique quand tu passes en live.</div>
@@ -732,11 +866,22 @@
     return res.json();
   }
 
+  function applyModuleDimming() {
+    document.querySelectorAll(".module-toggle").forEach((cb) => {
+      const category = cb.closest(".category");
+      if (category) category.classList.toggle("module-off", !cb.checked);
+    });
+  }
+
   function fillForm(config) {
     fields.forEach((key) => {
       const el = document.getElementById(key);
       if (el) el.value = config[key] || "";
     });
+    document.querySelectorAll(".module-toggle").forEach((cb) => {
+      cb.checked = config[cb.dataset.key] !== "off";
+    });
+    applyModuleDimming();
   }
 
   function readForm() {
@@ -745,8 +890,15 @@
       const el = document.getElementById(key);
       if (el) data[key] = el.value;
     });
+    document.querySelectorAll(".module-toggle").forEach((cb) => {
+      data[cb.dataset.key] = cb.checked ? "on" : "off";
+    });
     return data;
   }
+
+  document.querySelectorAll(".module-toggle").forEach((cb) => {
+    cb.addEventListener("change", applyModuleDimming);
+  });
 
   let guildRoles = [];
   let multiplierItems = [];
