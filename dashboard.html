@@ -493,9 +493,20 @@
         </div>
         <div class="field-group">
           <div class="field">
+            <label for="welcome_channel_id">Salon pour les messages d'arrivée</label>
+            <select id="welcome_channel_id"><option value="">— Choisir un salon —</option></select>
+          </div>
+          <div class="field">
             <label for="welcome_message">Message à l'arrivée d'un membre</label>
             <div class="hint">Utilise <code>{member}</code>, <code>{server}</code>, <code>{count}</code></div>
             <textarea id="welcome_message"></textarea>
+          </div>
+        </div>
+        <div class="field-group">
+          <div class="field">
+            <label for="leave_channel_id">Salon pour les messages de départ</label>
+            <div class="hint">Peut être différent du salon d'arrivée</div>
+            <select id="leave_channel_id"><option value="">— Choisir un salon —</option></select>
           </div>
           <div class="field">
             <label for="leave_message">Message au départ d'un membre</label>
@@ -727,7 +738,7 @@
   const API_BASE_URL = "https://colosobotemodo-production.up.railway.app";
 
   const fields = [
-    "welcome_message", "leave_message", "levelup_message",
+    "welcome_message", "leave_message", "welcome_channel_id", "leave_channel_id", "levelup_message",
     "ticket_panel_title", "ticket_panel_description", "ticket_welcome_message",
     "poll_footer",
     "xp_min", "xp_max", "xp_cooldown",
@@ -791,6 +802,23 @@
     const res = await fetch(`${API_BASE_URL}/api/roles?guild_id=${guildId}`, { headers: authHeaders() });
     if (!res.ok) throw new Error("fetch failed");
     return res.json();
+  }
+
+  async function fetchChannels(guildId) {
+    const res = await fetch(`${API_BASE_URL}/api/channels?guild_id=${guildId}`, { headers: authHeaders() });
+    if (!res.ok) throw new Error("fetch failed");
+    return res.json();
+  }
+
+  function fillChannelSelects(channels) {
+    const selects = [document.getElementById("welcome_channel_id"), document.getElementById("leave_channel_id")];
+    selects.forEach((sel) => {
+      if (!sel) return;
+      const current = sel.value;
+      sel.innerHTML = '<option value="">— Choisir un salon —</option>' +
+        channels.map((c) => `<option value="${c.id}">#${c.name}</option>`).join("");
+      sel.value = current;
+    });
   }
 
   async function fetchMultipliers(guildId) {
@@ -1123,13 +1151,15 @@
 
   async function loadCurrentGuildConfig() {
     currentGuildId = guildSelect.value;
-    const [config, roles, mults, items, perms] = await Promise.all([
+    const [config, roles, channels, mults, items, perms] = await Promise.all([
       fetchConfig(currentGuildId),
       fetchRoles(currentGuildId),
+      fetchChannels(currentGuildId),
       fetchMultipliers(currentGuildId),
       fetchShop(currentGuildId),
       fetchPermissions(currentGuildId),
     ]);
+    fillChannelSelects(channels);
     fillForm(config);
     guildRoles = roles;
     multiplierItems = mults;
