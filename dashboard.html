@@ -581,9 +581,9 @@
             <input type="number" id="daily_cooldown_hours" min="1">
           </div>
           <div class="field">
-            <label for="weekly_announce_channel_id">ID du salon pour le classement hebdomadaire</label>
-            <div class="hint">Clic droit sur un salon Discord → Copier l'identifiant (mode développeur activé). Laisse vide pour désactiver l'annonce automatique.</div>
-            <input type="text" id="weekly_announce_channel_id" placeholder="ex: 123456789012345678">
+            <label for="weekly_announce_channel_id">Salon pour le classement hebdomadaire</label>
+            <div class="hint">Laisse sur "Aucun" pour désactiver l'annonce automatique.</div>
+            <select id="weekly_announce_channel_id"><option value="">— Aucun —</option></select>
           </div>
         </div>
       </div>
@@ -673,9 +673,8 @@
             <input type="text" id="twitch_username" placeholder="ex: coloso2021">
           </div>
           <div class="field">
-            <label for="twitch_channel_id">ID du salon Discord pour l'annonce de live</label>
-            <div class="hint">Clic droit sur le salon → Copier l'identifiant (mode développeur activé sur Discord)</div>
-            <input type="text" id="twitch_channel_id" placeholder="ex: 123456789012345678">
+            <label for="twitch_channel_id">Salon Discord pour l'annonce de live</label>
+            <select id="twitch_channel_id"><option value="">— Choisir un salon —</option></select>
           </div>
           <div class="field">
             <label for="twitch_live_message">Message de live</label>
@@ -711,8 +710,8 @@
             <input type="text" id="instagram_username" placeholder="ex: @coloso2021">
           </div>
           <div class="field">
-            <label for="social_channel_id">ID du salon Discord pour YouTube / TikTok / Instagram</label>
-            <input type="text" id="social_channel_id" placeholder="ex: 123456789012345678">
+            <label for="social_channel_id">Salon Discord pour YouTube / TikTok / Instagram</label>
+            <select id="social_channel_id"><option value="">— Choisir un salon —</option></select>
           </div>
         </div>
       </div>
@@ -811,11 +810,13 @@
   }
 
   function fillChannelSelects(channels) {
-    const selects = [document.getElementById("welcome_channel_id"), document.getElementById("leave_channel_id")];
-    selects.forEach((sel) => {
+    const ids = ["welcome_channel_id", "leave_channel_id", "weekly_announce_channel_id", "twitch_channel_id", "social_channel_id"];
+    ids.forEach((id) => {
+      const sel = document.getElementById(id);
       if (!sel) return;
       const current = sel.value;
-      sel.innerHTML = '<option value="">— Choisir un salon —</option>' +
+      const emptyLabel = id === "weekly_announce_channel_id" ? "— Aucun —" : "— Choisir un salon —";
+      sel.innerHTML = `<option value="">${emptyLabel}</option>` +
         channels.map((c) => `<option value="${c.id}">#${c.name}</option>`).join("");
       sel.value = current;
     });
