@@ -529,6 +529,11 @@
         </div>
         <div class="field-group">
           <div class="field">
+            <label for="levelup_channel_id">Salon pour les annonces de niveau</label>
+            <div class="hint">Laisse sur "Salon d'origine" pour annoncer dans le salon où le membre a écrit.</div>
+            <select id="levelup_channel_id"><option value="">— Salon d'origine —</option></select>
+          </div>
+          <div class="field">
             <label for="levelup_message">Message de passage de niveau</label>
             <div class="hint">Utilise <code>{member}</code>, <code>{level}</code></div>
             <textarea id="levelup_message"></textarea>
@@ -647,6 +652,11 @@
         </div>
         <div class="field-group">
           <div class="field">
+            <label for="poll_channel_id">Salon pour les sondages</label>
+            <div class="hint">Laisse sur "Salon d'origine" pour publier dans le salon où la commande est tapée.</div>
+            <select id="poll_channel_id"><option value="">— Salon d'origine —</option></select>
+          </div>
+          <div class="field">
             <label for="poll_footer">Pied de page des sondages</label>
             <div class="hint">Utilise <code>{author}</code></div>
             <input type="text" id="poll_footer">
@@ -737,9 +747,10 @@
   const API_BASE_URL = "https://colosobotemodo-production.up.railway.app";
 
   const fields = [
-    "welcome_message", "leave_message", "welcome_channel_id", "leave_channel_id", "levelup_message",
+    "welcome_message", "leave_message", "welcome_channel_id", "leave_channel_id",
+    "levelup_message", "levelup_channel_id",
     "ticket_panel_title", "ticket_panel_description", "ticket_welcome_message",
-    "poll_footer",
+    "poll_footer", "poll_channel_id",
     "xp_min", "xp_max", "xp_cooldown",
     "currency_name", "daily_min", "daily_max", "daily_cooldown_hours", "weekly_announce_channel_id",
     "twitch_username", "twitch_channel_id", "twitch_live_message",
@@ -810,12 +821,17 @@
   }
 
   function fillChannelSelects(channels) {
-    const ids = ["welcome_channel_id", "leave_channel_id", "weekly_announce_channel_id", "twitch_channel_id", "social_channel_id"];
+    const ids = [
+      "welcome_channel_id", "leave_channel_id", "levelup_channel_id", "poll_channel_id",
+      "weekly_announce_channel_id", "twitch_channel_id", "social_channel_id",
+    ];
     ids.forEach((id) => {
       const sel = document.getElementById(id);
       if (!sel) return;
       const current = sel.value;
-      const emptyLabel = id === "weekly_announce_channel_id" ? "— Aucun —" : "— Choisir un salon —";
+      const emptyLabel = (id === "weekly_announce_channel_id") ? "— Aucun —"
+        : (id === "levelup_channel_id" || id === "poll_channel_id") ? "— Salon d'origine —"
+        : "— Choisir un salon —";
       sel.innerHTML = `<option value="">${emptyLabel}</option>` +
         channels.map((c) => `<option value="${c.id}">#${c.name}</option>`).join("");
       sel.value = current;
