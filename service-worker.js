@@ -1,4 +1,4 @@
-const CACHE_NAME = "colosobotmodo-v1";
+const CACHE_NAME = "colosobot-v1";
 const APP_SHELL = [
   "./index.html",
   "./dashboard.html",
