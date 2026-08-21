@@ -1,5 +1,5 @@
 {
-  "name": "colosobot — Le bot tout-en-un pour ton serveur Discord",
+  "name": "colosobot",
   "short_name": "Colosobot",
   "description": "Gère et configure colosobot, le bot tout-en-un pour ton serveur Discord.",
   "start_url": "./index.html",
